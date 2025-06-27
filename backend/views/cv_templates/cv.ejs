@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Professional CV template for Olivia Wilson, Marketing Manager. Includes experience, education, skills, and contact details."
+    />
+    <title>CV Template</title>
+    <link rel="stylesheet" href="/css/cv.css" />
+  </head>
+  <body>
+    <div class="a4-page">
+      <div class="intro">
+        <div class="bgSig"></div>
+        <div class="name">OLIVIA WILSON</div>
+        <div class="position">MARKETING MANAGER</div>
+      </div>
+      <div class="expBoxConatiner">
+        <div class="boxTwo">
+          <div class="edu">
+            <div class="eduData">
+              <div class="title"><strong>E</strong>DUCATION</div>
+              <div class="duration">2029 - 2030</div>
+              <div class="name">BORCELLE UNIVERSITY</div>
+              <li class="program">Master of Business Management</li>
+              <li class="gpa">GPA: 3.8 / 4.0</li>
+            </div>
+            <div class="eduData">
+              <div class="duration">2025 - 2028</div>
+              <div class="name">BORCELLE UNIVERSITY</div>
+              <li class="program">Bachelor of Commerce</li>
+              <li class="gpa">GPA: 3.7 / 4.0</li>
+            </div>
+          </div>
+          <div class="skills">
+            <div class="title"><strong>S</strong>KILLS</div>
+            <ul>
+              <li>Project Management</li>
+              <li>Public Relations</li>
+              <li>Teamwork</li>
+              <li>Time Management</li>
+              <li>Leadership</li>
+              <li>Effective Communication</li>
+              <li>Critical Thinking</li>
+            </ul>
+          </div>
+          <div class="language">
+            <div class="title"><strong>L</strong>ANGUAGE</div>
+            <ul>
+              <li>Hindi</li>
+              <li>English</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exp">
+          <div class="title"><strong>W</strong>ORK EXPERIENCE</div>
+          <div class="company">
+            <div class="compDetail">
+              <div class="name">Borcelle Studio</div>
+              <div class="duration">2030 - Present</div>
+            </div>
+            <div class="position">Marketing Manager & Specialist</div>
+            <div class="workExp">
+              <li>
+                Led the development and implementation of comprehensive
+                marketing strategies that resulted in a 20% increase in brand
+                visibility and a 15% growth in sales within the first year.
+              </li>
+              <li>
+                Successfully launched and managed multiple cross-channel
+                campaigns, including digital marketing, social media, and
+                traditional advertising, resulting in improved customer
+                acquisition and retention rates.
+              </li>
+            </div>
+          </div>
+          <div class="company">
+            <div class="compDetail">
+              <div class="name">Borcelle Studio</div>
+              <div class="duration">2030 - Present</div>
+            </div>
+            <div class="position">Marketing Manager & Specialist</div>
+            <div class="workExp">
+              <li>
+                Led the development and implementation of comprehensive
+                marketing strategies that resulted in a 20% increase in brand
+                visibility and a 15% growth in sales within the first year.
+              </li>
+              <li>
+                Successfully launched and managed multiple cross-channel
+                campaigns, including digital marketing, social media, and
+                traditional advertising, resulting in improved customer
+                acquisition and retention rates.
+              </li>
+            </div>
+          </div>
+          <div class="company">
+            <div class="compDetail">
+              <div class="name">Borcelle Studio</div>
+              <div class="duration">2030 - Present</div>
+            </div>
+            <div class="position">Marketing Manager & Specialist</div>
+            <div class="workExp">
+              <li>
+                Led the development and implementation of comprehensive
+                marketing strategies that resulted in a 20% increase in brand
+                visibility and a 15% growth in sales within the first year.
+              </li>
+              <li>
+                Successfully launched and managed multiple cross-channel
+                campaigns, including digital marketing, social media, and
+                traditional advertising, resulting in improved customer
+                acquisition and retention rates.
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 🔥 This button is outside the page -->
+    <img
+      id="downloadBtn"
+      src="/assets/pdf.svg"
+      alt="Download PDF"
+      style="cursor: pointer; position: static; z-index: 1000; height: 14mm"
+    />
+
+    <!-- 🔽 Script to generate PDF -->
+    <script>
+      document
+        .getElementById('downloadBtn')
+        .addEventListener('click', async () => {
+          const htmlContent = document.querySelector('.a4-page').outerHTML
+
+          const response = await fetch('/generate-pdf', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ html: htmlContent })
+          })
+
+          const blob = await response.blob()
+          const url = URL.createObjectURL(blob)
+
+          const link = document.createElement('a')
+          link.href = url
+          link.download = 'resume.pdf'
+          link.click()
+          URL.revokeObjectURL(url)
+        })
+    </script>
+  </body>
+</html>
