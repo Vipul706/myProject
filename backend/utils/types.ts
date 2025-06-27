@@ -7,6 +7,7 @@ type LogMethod = (message: string, ...meta: any[]) => void;
 type ParsedError = {
   name: string;
   message: string;
+  method:string;
   stack: string;
 };
 
