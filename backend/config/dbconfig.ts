@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { env } from "./envconfig";
-import { createLogger } from "../utils/utils";
+import { createLogger } from "../utils/logger";
 
 const connection = mongoose
 const logger = createLogger();

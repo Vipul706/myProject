@@ -6,7 +6,11 @@ const blackBoxSchema = new mongoose.Schema(
         name: { type: String, required: true },
         method: { type: String, required: true },
         stack: { type: String },                                // Stack trace
-        level: { type: String, default: "error" },              // Severity: error/warn/info
+        level: {
+            type: String,
+            enum: ['fatal', 'error', 'warn', 'info', 'debug', 'trace'],
+            default: 'error'
+        }, // Strict log level            // Severity: error/warn/info
         meta: { type: mongoose.Schema.Types.Mixed },            // Any extra data
         createdAt: { type: Date, default: Date.now, expires: '30d' }  // TTL: auto-delete after 30 days
     },

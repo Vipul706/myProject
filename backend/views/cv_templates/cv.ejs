@@ -8,7 +8,7 @@
       content="Professional CV template for Olivia Wilson, Marketing Manager. Includes experience, education, skills, and contact details."
     />
     <title>CV Template</title>
-    <link rel="stylesheet" href="/css/cv.css" />
+    <link rel="stylesheet" href="/css/cv.css?v=" />
   </head>
   <body>
     <div class="a4-page">
@@ -56,66 +56,21 @@
         </div>
         <div class="exp">
           <div class="title"><strong>W</strong>ORK EXPERIENCE</div>
+
+          <% data.exp.forEach(function(expItem) { %>
           <div class="company">
             <div class="compDetail">
-              <div class="name">Borcelle Studio</div>
-              <div class="duration">2030 - Present</div>
+              <div class="name"><%= expItem.name %></div>
+              <div class="duration"><%= expItem.duration %></div>
             </div>
-            <div class="position">Marketing Manager & Specialist</div>
+            <div class="position"><%= expItem.position %></div>
             <div class="workExp">
-              <li>
-                Led the development and implementation of comprehensive
-                marketing strategies that resulted in a 20% increase in brand
-                visibility and a 15% growth in sales within the first year.
-              </li>
-              <li>
-                Successfully launched and managed multiple cross-channel
-                campaigns, including digital marketing, social media, and
-                traditional advertising, resulting in improved customer
-                acquisition and retention rates.
-              </li>
+              <% expItem.pointers.forEach(function(point) { %>
+              <li><%= point %></li>
+              <% }) %>
             </div>
           </div>
-          <div class="company">
-            <div class="compDetail">
-              <div class="name">Borcelle Studio</div>
-              <div class="duration">2030 - Present</div>
-            </div>
-            <div class="position">Marketing Manager & Specialist</div>
-            <div class="workExp">
-              <li>
-                Led the development and implementation of comprehensive
-                marketing strategies that resulted in a 20% increase in brand
-                visibility and a 15% growth in sales within the first year.
-              </li>
-              <li>
-                Successfully launched and managed multiple cross-channel
-                campaigns, including digital marketing, social media, and
-                traditional advertising, resulting in improved customer
-                acquisition and retention rates.
-              </li>
-            </div>
-          </div>
-          <div class="company">
-            <div class="compDetail">
-              <div class="name">Borcelle Studio</div>
-              <div class="duration">2030 - Present</div>
-            </div>
-            <div class="position">Marketing Manager & Specialist</div>
-            <div class="workExp">
-              <li>
-                Led the development and implementation of comprehensive
-                marketing strategies that resulted in a 20% increase in brand
-                visibility and a 15% growth in sales within the first year.
-              </li>
-              <li>
-                Successfully launched and managed multiple cross-channel
-                campaigns, including digital marketing, social media, and
-                traditional advertising, resulting in improved customer
-                acquisition and retention rates.
-              </li>
-            </div>
-          </div>
+          <% }) %>
         </div>
       </div>
     </div>

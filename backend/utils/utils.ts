@@ -1,23 +1,12 @@
-import { env } from '../config/envconfig';
 import { models } from './../collections/index';
-import { Logger } from "./logger";
 const { blackBox } = models
-import type { LogLevel, LogTransport, ParsedError } from "./types";
+import type { ParsedError } from "./types";
 
-const createLogger = (): Logger => {
-    const logger = new Logger(env.log_level as LogLevel || 'info');
-    logger.addTransport(ConsoleTransport);
-    return logger;
-};
-const ConsoleTransport: LogTransport = {
-    log(level: LogLevel, message: string, meta: any[]) {
-        console.log(message, ...meta);
-    }
-};
+
 async function errorParser(error: any, methodName: string, level: string): Promise<ParsedError> {
     const err = await blackBox.findOne({ stack: error.stack, method: methodName })
     if (!err) {
-        await models.blackBox.create({
+        await blackBox.create({
             message: error.message,
             method: methodName,
             name: error.name,
@@ -43,6 +32,5 @@ async function errorParser(error: any, methodName: string, level: string): Promi
 }
 
 export {
-    createLogger,
     errorParser
 };

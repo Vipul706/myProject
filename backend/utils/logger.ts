@@ -1,3 +1,4 @@
+import { env } from "process";
 import { define } from "../config/define";
 import type { LogLevel, LogTransport, LogMethod } from "./types";
 import moment from 'moment';
@@ -44,4 +45,20 @@ export class Logger {
     info: LogMethod = (msg, ...meta) => this.log('info', msg, ...meta);
     debug: LogMethod = (msg, ...meta) => this.log('debug', msg, ...meta);
     trace: LogMethod = (msg, ...meta) => this.log('trace', msg, ...meta);
+}
+
+
+const createLogger = (): Logger => {
+    const logger = new Logger(env.log_level as LogLevel || 'info');
+    logger.addTransport(ConsoleTransport);
+    return logger;
+};
+const ConsoleTransport: LogTransport = {
+    log(level: LogLevel, message: string, meta: any[]) {
+        console.log(message, ...meta);
+    }
+};
+
+export {
+    createLogger
 }

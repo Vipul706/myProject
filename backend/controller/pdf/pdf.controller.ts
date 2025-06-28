@@ -1,7 +1,8 @@
 import type { Request, Response } from "express"
 import puppeteer from "puppeteer";
-import { errorParser, createLogger } from "../../utils/utils";
+import { errorParser } from "../../utils/utils";
 import { env } from "../../config/envconfig";
+import { createLogger } from "../../utils/logger";
 const port = env.port;
 const logger = createLogger();
 

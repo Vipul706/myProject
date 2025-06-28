@@ -1,5 +1,5 @@
 import express from 'express';
-import { createLogger, errorParser } from '../utils/utils';
+import {  errorParser } from '../utils/utils';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
@@ -8,10 +8,12 @@ import type { routeRegistration } from '../utils/types';
 import { cv, pdf } from './routes';
 import { apiHeartBeat, routerSanity } from '../middleware/validators';
 import { env } from '../config/envconfig';
-import { connectToDatabase } from '../config/dbConfig';
+import { connectToDatabase } from '../config/dbconfig';
+import { createLogger } from '../utils/logger';
+// import { models } from '../collections';
 
 const logger = createLogger();
-const port = env.app_base_path
+const port = env.port
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,7 +69,7 @@ const initializeApp = async (app: express.Express) => {
 
     // 👇 JSON body parser
     app.use(express.json({ limit: '10mb' }));
-
+   
     // 👇 Register routes
     routePaths.forEach((routes) => {
       logger.info(`Route Path: ${rootRoutePath + routes.routepath}`);
