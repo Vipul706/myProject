@@ -1,7 +1,8 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { createLogger } from "../utils/logger";
 import { models } from "../collections";
 import { errorParser } from "../utils/utils";
+import type { AppError } from "../typing/express-error";
 
 const { pulseStream } = models
 
@@ -27,4 +28,10 @@ const apiHeartBeat = async (request: Request, response: Response, next: NextFunc
     }
 }
 
-export { routerSanity, apiHeartBeat };
+const globalErrorHandler = async (err: AppError, req: Request, res: Response, next: NextFunction) => {
+      await errorParser(err, err.name, err.level);
+      logger[err.level](err.message, err);
+      res.status(err.statusCode).send(err);
+    }
+
+export { routerSanity, apiHeartBeat,globalErrorHandler };

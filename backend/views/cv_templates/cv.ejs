@@ -8,7 +8,7 @@
       content="Professional CV template for Olivia Wilson, Marketing Manager. Includes experience, education, skills, and contact details."
     />
     <title>CV Template</title>
-    <link rel="stylesheet" href="/css/cv.css?v=" />
+    <link rel="stylesheet" href="/css/cv.css" />
   </head>
   <body>
     <div class="a4-page">
@@ -20,32 +20,35 @@
       <div class="expBoxConatiner">
         <div class="boxTwo">
           <div class="edu">
+            <div class="title"><strong>E</strong>DUCATION</div>
+
+            <% if (data.education && data.education.length > 0) { %> <%
+            data.education.forEach(function(edu) { %>
             <div class="eduData">
-              <div class="title"><strong>E</strong>DUCATION</div>
-              <div class="duration">2029 - 2030</div>
-              <div class="name">BORCELLE UNIVERSITY</div>
-              <li class="program">Master of Business Management</li>
-              <li class="gpa">GPA: 3.8 / 4.0</li>
+              <div class="duration"><%= edu.duration %></div>
+              <div class="name"><%= edu.name %></div>
+              <li class="program"><%= edu.program %></li>
+              <li class="gpa">CGPA: <%= edu.cgpa %></li>
             </div>
+            <% }); %> <% } else { %>
             <div class="eduData">
-              <div class="duration">2025 - 2028</div>
-              <div class="name">BORCELLE UNIVERSITY</div>
-              <li class="program">Bachelor of Commerce</li>
-              <li class="gpa">GPA: 3.7 / 4.0</li>
+              <div class="name">No education data available</div>
             </div>
+            <% } %>
           </div>
+
           <div class="skills">
             <div class="title"><strong>S</strong>KILLS</div>
             <ul>
-              <li>Project Management</li>
-              <li>Public Relations</li>
-              <li>Teamwork</li>
-              <li>Time Management</li>
-              <li>Leadership</li>
-              <li>Effective Communication</li>
-              <li>Critical Thinking</li>
+              <% if (data.skills && data.skills.length > 0) { %> <%
+              data.skills.forEach(function(skill) { %>
+              <li><%= skill %></li>
+              <% }); %> <% } else { %>
+              <li>No skills listed</li>
+              <% } %>
             </ul>
           </div>
+
           <div class="language">
             <div class="title"><strong>L</strong>ANGUAGE</div>
             <ul>
@@ -89,7 +92,7 @@
         .addEventListener('click', async () => {
           const htmlContent = document.querySelector('.a4-page').outerHTML
 
-          const response = await fetch('/generate-pdf', {
+          const response = await fetch('pdf/generate-pdf', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

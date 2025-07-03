@@ -1,6 +1,7 @@
+import { AppError } from '../typing/express-error';
 import { models } from './../collections/index';
 const { blackBox } = models
-import type { ParsedError } from "./types";
+import type { LogLevel, ParsedError } from "../typing/types";
 
 
 async function errorParser(error: any, methodName: string, level: string): Promise<ParsedError> {
@@ -31,6 +32,16 @@ async function errorParser(error: any, methodName: string, level: string): Promi
     };
 }
 
+ function errorGenerator(fnName: string, message: string, code: number, level: LogLevel) {
+    const error = new AppError();
+    error.message = message
+    error.name = fnName
+    error.level = level
+    error.statusCode = code
+    return error
+}
+
 export {
-    errorParser
+    errorParser,
+    errorGenerator
 };

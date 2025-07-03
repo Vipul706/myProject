@@ -1,38 +1,18 @@
 import type { Request, Response } from 'express'
-const dataObject = {
-    exp: [{
-        name: 'Borcelle Studio',
-        duration: '2030 - Present',
-        position: 'Marketing Manager & Specialist',
-        pointers: [
-            "Led the development and implementation of comprehensive marketing strategies that resulted in a 20% increase in brand visibility and a 15% growth in sales within the first year.",
-            "Successfully launched and managed multiple cross-channel campaigns, including digital marketing, social media, and traditional advertising, resulting in improved customer acquisition and retention rates."
-        ]
-    },
-    {
-        name: 'Borcelle Studio',
-        duration: '2030 - Present',
-        position: 'Marketing Manager & Specialist',
-        pointers: [
-            "Led the development and implementation of comprehensive marketing strategies that resulted in a 20% increase in brand visibility and a 15% growth in sales within the first year.",
-            "Successfully launched and managed multiple cross-channel campaigns, including digital marketing, social media, and traditional advertising, resulting in improved customer acquisition and retention rates."
-        ]
-    },
-    {
-        name: 'Borcelle Studio',
-        duration: '2030 - Present',
-        position: 'Marketing Manager & Specialist',
-        pointers: [
-            "Led the development and implementation of comprehensive marketing strategies that resulted in a 20% increase in brand visibility and a 15% growth in sales within the first year.",
-            "Successfully launched and managed multiple cross-channel campaigns, including digital marketing, social media, and traditional advertising, resulting in improved customer acquisition and retention rates."
-        ]
-    },
-    ],
-    skills:[],
-    education:[]
-}
-const getCvTemp = (req: Request, res: Response) => {
-    res.render('cv.ejs', { data: dataObject });
-}
+import { models } from "../../collections/index";
+import { createLogger } from '../../utils/logger';
+import { errorGenerator } from '../../utils/utils';
+const { UserVault } = models
+const logger = createLogger();
+
+
+const getCvTemp = async (req: Request, res: Response) => {
+    logger.info('Controller initialized')
+    const populatedUser = await UserVault.findOne({ name: "Vipul Singh" }).populate('cv');
+    if (!populatedUser.cv) {
+        throw errorGenerator(getCvTemp.name,'User or CV not found',500,'error'); 
+    }
+    res.render('cv_templates/cv.ejs', { data: populatedUser.cv });
+};
 
 export { getCvTemp }

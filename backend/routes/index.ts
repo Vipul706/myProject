@@ -1,16 +1,15 @@
 import express from 'express';
-import {  errorParser } from '../utils/utils';
+import { errorParser } from '../utils/utils';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 import minifyHTML from 'express-minify-html';
-import type { routeRegistration } from '../utils/types';
-import { cv, pdf } from './routes';
-import { apiHeartBeat, routerSanity } from '../middleware/validators';
+import type { routeRegistration } from '../typing/types';
+import { cv, login, pdf } from './routes';
+import { apiHeartBeat, globalErrorHandler, routerSanity } from '../middleware/validators';
 import { env } from '../config/envconfig';
 import { connectToDatabase } from '../config/dbconfig';
 import { createLogger } from '../utils/logger';
-// import { models } from '../collections';
 
 const logger = createLogger();
 const port = env.port
@@ -30,6 +29,12 @@ const routePaths: routeRegistration = [
     router: pdf,
     middlewares: [],
     authMiddleware: [apiHeartBeat, routerSanity]
+  },
+  {
+    routepath: '/login',
+    router: login,
+    middlewares: [],
+    authMiddleware: [apiHeartBeat, routerSanity]
   }
 ];
 
@@ -39,9 +44,9 @@ const initializeApp = async (app: express.Express) => {
     await connectToDatabase();
     app.use(compression());
     // 👇 Enable EJS view engine and template caching
-    app.set('views', path.join(__dirname, '../views/cv_templates'));
+    app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'ejs');
-    app.set('view cache', true);
+    // app.set('view cache', true);
 
     // 👇 Minify HTML responses
     app.use(
@@ -61,15 +66,12 @@ const initializeApp = async (app: express.Express) => {
 
     // 👇 Serve static files with long-term caching
     app.use(
-      express.static(path.join(__dirname, '../public'), {
-        maxAge: '1y', // Set cache-control max-age
-        etag: true
-      })
+      express.static(path.join(__dirname, '../public'))
     );
 
     // 👇 JSON body parser
     app.use(express.json({ limit: '10mb' }));
-   
+
     // 👇 Register routes
     routePaths.forEach((routes) => {
       logger.info(`Route Path: ${rootRoutePath + routes.routepath}`);
@@ -78,6 +80,9 @@ const initializeApp = async (app: express.Express) => {
         routes.router(...routes.authMiddleware, ...routes.middlewares)
       );
     });
+
+    // GlobalErrorHandler Registered
+    app.use(globalErrorHandler);
 
     app.listen(port, () => {
       logger.info(`🚀 Server running on port ---> ${port}`);
