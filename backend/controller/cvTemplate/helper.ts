@@ -1,0 +1,27 @@
+import type { Request, Response } from 'express'
+import { errorGenerator, errorParser } from '../../utils/utils';
+import { Model, models } from 'mongoose';
+import type { CvData, cvErrorCode } from './types';
+import type { IUserDocument } from '../../types/model.type';
+const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
+
+const hCvTemplate = async (): Promise<{ errorCode: cvErrorCode, code: number, data?: CvData }> => {
+    try {
+        const populatedUser = await UserVault.findOne({ name: "Vipul Singh" }).populate('cv').lean();
+        if (!populatedUser || (populatedUser && !populatedUser.cv)) {
+            throw errorGenerator("Db Error", 'USER_DATA_DOES_NOT_EXIST', 500, 'error', hCvTemplate.name);
+        }
+        const resumeData: CvData = populatedUser.cv as CvData
+        return {
+            errorCode: 'NO_ERROR',
+            data: resumeData,
+            code: 200
+        }
+    } catch (error) {
+        const errorData = await errorParser(error, hCvTemplate.name, 'error');
+        throw (errorData)
+    }
+}
+export {
+    hCvTemplate
+}

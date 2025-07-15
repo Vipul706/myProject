@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="auth-shell">
+        <div class="boxOne" id="boxOne">
+          <div class="signup fade-in" id="signup">
+            <h2>Create an Account</h2>
+            <span>Join us and start your journey today</span>
+            <form action="/login/access" id="loginForm" method="post">
+              <div class="formField">
+                <label for="email">Email Address</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="Enter your Email"
+                />
+              </div>
+
+              <span id="loginButton">Login</span>
+              <div class="formField">
+                <label for="pass">Password</label>
+                <input
+                  id="pass"
+                  name="pass"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Create your password"
+                />
+              </div>
+              <button type="submit">Sign Up</button>
+            </form>
+          </div>
+          <div class="greetings fade-out" id="greetings">
+            <div class="introGraphic intro">
+              <img src="/assets/handheart.svg" alt="none" />
+            </div>
+            <div class="circle position"></div>
+            <h2>Welcome to our platform.</h2>
+            <span
+              >Explore your personalized tools, resume drafts, and career
+              insights. Everything you need to take the next step is waiting for
+              you inside.</span
+            >
+            <div class="icons">
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/smile.svg" alt="none" />
+                </div>
+                <span>Secure</span>
+              </div>
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/dashboard.svg" alt="none" />
+                </div>
+                <span>Fast</span>
+              </div>
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/rewind.svg" alt="none" />
+                </div>
+                <span>Reliable</span>
+              </div>
+            </div>
+            <div class="circle downPosition"></div>
+          </div>
+        </div>
+
+        <div class="boxTwo" id="boxTwo">
+          <div class="login fade-out" id="login">
+            <h2>Login to Your Account</h2>
+            <span>Welcome back! Please enter your credentials </span>
+            <form action="/login/access" id="loginForm" method="post">
+              <div class="formField">
+                <label for="email">Email Address</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="Enter your Email"
+                />
+              </div>
+
+              <span id="SignUp">Sign Up</span>
+              <div class="formField">
+                <label for="pass">Password</label>
+                <input
+                  id="pass"
+                  name="pass"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Create your password"
+                />
+              </div>
+              <div class="authButtons">
+                <div class="remButton">
+                  <input type="checkbox" id="remButton" />
+                  <span>Remember me</span>
+                </div>
+                <span>Forgot password?</span>
+              </div>
+              <button type="submit">Login</button>
+            </form>
+          </div>
+          <div class="welcome fade-in" id="welcome">
+            <div class="introGraphic intro">
+              <img src="/assets/rocket-svgrepo-com.svg" alt="none" />
+            </div>
+            <div class="circle position"></div>
+            <h2>Welcome to our platform.</h2>
+            <span
+              >Build your professional CV effortlessly with our smart templates
+              and tips. Join thousands who’ve landed jobs using our powerful
+              resume builder..</span
+            >
+            <div class="icons">
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/secure_pc.svg" alt="none" />
+                </div>
+                <span>Secure</span>
+              </div>
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/fastforward.svg" alt="none" />
+                </div>
+                <span>Fast</span>
+              </div>
+              <div class="iconBox">
+                <div class="introGraphic">
+                  <img src="/assets/heart.svg" alt="none" />
+                </div>
+                <span>Reliable</span>
+              </div>
+            </div>
+            <div class="circle downPosition"></div>
+          </div>
+        </div>
+
+        <div class="divider" id="divider">
+          <div class="sliderButton" id="slider">
+            <img src="/assets/right_arrow.svg" id="arrow" alt="none" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const elements = {
+        slider: document.getElementById('slider'),
+        signUpButton: document.getElementById('SignUp'),
+        loginButton: document.getElementById('loginButton'),
+        divider: document.getElementById('divider'),
+        signup: document.getElementById('signup'),
+        welcome: document.getElementById('welcome'),
+        login: document.getElementById('login'),
+        greetings: document.getElementById('greetings'),
+        boxOne: document.getElementById('boxOne'),
+        boxTwo: document.getElementById('boxTwo'),
+        arrow: document.getElementById('arrow')
+      }
+
+      let isAlt = false
+
+      const toggleFade = (elementsToHide, elementsToShow) => {
+        elementsToHide.forEach(el => {
+          el.classList.remove('fade-in')
+          el.classList.add('fade-out')
+        })
+
+        elementsToShow.forEach(el => {
+          el.classList.remove('fade-out')
+          el.classList.add('fade-in')
+        })
+      }
+
+      const toggleBoxes = () => {
+        toggleFade(
+          isAlt
+            ? [elements.login, elements.greetings]
+            : [elements.signup, elements.welcome],
+          isAlt
+            ? [elements.signup, elements.welcome]
+            : [elements.login, elements.greetings]
+        )
+
+        // Toggle styles for background and divider
+        elements.boxOne.classList.toggle('boxOneChangeColor')
+        elements.boxTwo.classList.toggle('boxTwoChangeColor')
+        elements.divider.classList.toggle('toggleDivider')
+        elements.arrow.classList.toggle('rotateImage')
+
+        isAlt = !isAlt
+      }
+
+      const addToggleListener = button => {
+        button.addEventListener('click', () => {
+          elements.slider.classList.toggle('active')
+          toggleBoxes()
+        })
+      }
+
+      ;[elements.slider, elements.signUpButton, elements.loginButton].forEach(
+        addToggleListener
+      )
+    </script>
+  </body>
+</html>

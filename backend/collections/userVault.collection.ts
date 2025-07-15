@@ -1,11 +1,25 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs'; // or 'bcrypt'
+const allowedDomains = ['gmail.com', 'mycompany.com'];
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        validate: {
+            validator: function (value: string) {
+                if (!value.includes('@')) return false;
+                const [, domain] = value.split('@');
+                return allowedDomains.includes(domain);
+            },
+            message: props => `${props.value} is not from an allowed domain.`
+        }
     },
     password: {
         type: String,
@@ -30,8 +44,8 @@ userSchema.pre('save', async function (next) {
         const salt = await bcrypt.genSalt(10); // You can increase rounds for more security
         this.password = await bcrypt.hash(this.password, salt);
         next();
-    } catch (err) {
-        throw (err);
+    } catch (err: any) {
+        next(err);
     }
 });
 

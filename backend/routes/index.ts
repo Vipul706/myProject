@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 import minifyHTML from 'express-minify-html';
-import type { routeRegistration } from '../typing/types';
+import type { routeRegistration } from '../types/types';
 import { cv, login, pdf } from './routes';
 import { apiHeartBeat, globalErrorHandler, routerSanity } from '../middleware/validators';
 import { env } from '../config/envconfig';
@@ -22,19 +22,19 @@ const routePaths: routeRegistration = [
     routepath: '/cv',
     router: cv,
     middlewares: [],
-    authMiddleware: [routerSanity, apiHeartBeat]
+    authMiddleware: [apiHeartBeat]
   },
   {
     routepath: '/pdf',
     router: pdf,
     middlewares: [],
-    authMiddleware: [apiHeartBeat, routerSanity]
+    authMiddleware: [apiHeartBeat]
   },
   {
     routepath: '/login',
     router: login,
     middlewares: [],
-    authMiddleware: [apiHeartBeat, routerSanity]
+    authMiddleware: [apiHeartBeat]
   }
 ];
 
@@ -71,15 +71,17 @@ const initializeApp = async (app: express.Express) => {
 
     // 👇 JSON body parser
     app.use(express.json({ limit: '10mb' }));
+    app.use(express.urlencoded({ extended: true }));
 
     // 👇 Register routes
-    routePaths.forEach((routes) => {
+    for (const routes of routePaths) {
       logger.info(`Route Path: ${rootRoutePath + routes.routepath}`);
-      app.use(
-        routes.routepath,
-        routes.router(...routes.authMiddleware, ...routes.middlewares)
-      );
-    });
+      const router = await routes.router(...routes.authMiddleware, ...routes.middlewares);
+      if (router) {
+        app.use(routes.routepath, router);
+      } 
+    }
+
 
     // GlobalErrorHandler Registered
     app.use(globalErrorHandler);
@@ -87,9 +89,9 @@ const initializeApp = async (app: express.Express) => {
     app.listen(port, () => {
       logger.info(`🚀 Server running on port ---> ${port}`);
     });
-  } catch (error: unknown) {
-    const err = await errorParser(error, initializeApp.name, 'fatal');
-    logger.fatal(err.message, err);
+  } catch (error: any) {
+    const err = await errorParser(error, error.methodName);
+    logger[err.level](err.name,err.message, err);
   }
 };
 

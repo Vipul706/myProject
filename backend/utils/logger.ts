@@ -1,6 +1,6 @@
 import { env } from "process";
 import { define } from "../config/define";
-import type { LogLevel, LogTransport, LogMethod } from "../typing/types";
+import type { LogLevel, LogTransport, LogMethod } from "../types/types";
 import moment from 'moment';
 
 export class Logger {

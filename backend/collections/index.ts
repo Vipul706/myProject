@@ -1,33 +1,39 @@
-import mongoose from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import { createLogger } from "../utils/logger";
 import { readdirSync } from "fs";
 import { join, resolve } from "path";
 
-const logger = createLogger()
+const logger = createLogger();
 
-const registerCollections = () => {
+// 👇️ Helper type to preserve full typings
+type RegisteredModel<T = any> = Model<T, {}, {}, {}, any, Schema<T>>;
+
+export const registerCollections = () => {
     try {
         const modelsDir = resolve(__dirname, './');
-        const registeredModels: Record<string, mongoose.Model<any>> = {};
+        const registeredModels: Record<string, RegisteredModel> = {};
         const files = readdirSync(modelsDir);
-        files
-            .filter(file => file.endsWith('.collection.ts') || file.endsWith('.collection.js'))
-            .forEach(file => {
+
+        for (const file of files) {
+            if (file.endsWith('.collection.ts')) {
                 const fullPath = join(modelsDir, file);
                 const { modelName, schema } = require(fullPath);
 
                 if (modelName && schema) {
                     registeredModels[modelName] = mongoose.model(modelName, schema);
-                    logger.info(`Model registered: ${modelName}`);
+                    logger.info(`✅ Model registered: ${modelName}`);
                 } else {
-                    logger.warn(`Skipping file (no modelName or schema): ${file}`);
+                    logger.warn(`⚠️ Skipping file (missing modelName or schema): ${file}`);
                 }
-            });
-        logger.info('Collections Registered')
-        return registeredModels
+            }
+        }
+
+        logger.info('📦 Collections Registered');
+        return registeredModels;
     } catch (error) {
-        throw (error)
+        logger.error("❌ Error registering collections", error);
+        throw error;
     }
-}
+};
 
 export const models = registerCollections();

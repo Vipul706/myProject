@@ -9,6 +9,8 @@ type ParsedError = {
   message: string;
   method:string;
   stack: string;
+  level: LogLevel,
+  code:number
 };
 
 
@@ -16,7 +18,7 @@ type MiddlewareFn = (request: Request, reply: Response, next: NextFunction) => v
 
 type routeRegistration = {
   routepath: string,
-  router: (...middlewares: MiddlewareFn[]) => Router,
+  router: (...middlewares: MiddlewareFn[]) => Promise<Router | undefined>,
   middlewares: MiddlewareFn[],
   authMiddleware: MiddlewareFn[],
 }[];

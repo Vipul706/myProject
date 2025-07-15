@@ -2,6 +2,7 @@ import 'express';
 
 declare module 'express-serve-static-core' {
   interface Request {
-    validRoute?: boolean;
+    validRoute: boolean;
+    token: string
   }
 }

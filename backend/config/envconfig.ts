@@ -1,16 +1,37 @@
-const env = {
-  port:process.env.PORT,
-  pro_env:process.env.PROJECT_ENV,
-  app_base_path:process.env.API_BASE_PATH,
-  db_user:process.env.USER,
-  db_pass:process.env.PASS,
-  db_max_pool:process.env.MAXPOOLSIZE,
-  db_min_pool:process.env.MINPOOLSIZE,
-  db_url:process.env.DB_URL!,
-  db_name:process.env.DB_NAME!,
-  log_level:process.env.LOG_LEVEL
+
+import { AppError } from '../types/express-error';
+import { envSchema } from './env.validation';
+
+// Step 2: Validate process.env 
+const { error, value } = envSchema.validate(process.env, {
+  abortEarly: true, // show all errors at once
+  allowUnknown: true,
+  stripUnknown: false,
+});
+
+// Step 3: If validation fails, throw AppError
+if (error) {
+  throw new AppError(
+    `⚠️ Environment variable validation error:\n${error.message}`,
+    500,
+    'envconfig',
+    'fatal'
+  );
 }
 
-export {
-    env
-}
+// Step 4: Safely extract env values
+const env = {
+  port: value.PORT,
+  pro_env: value.PROJECT_ENV,
+  app_base_path: value.API_BASE_PATH,
+  db_user: value.USER,
+  db_pass: value.PASS,
+  db_max_pool: value.MAXPOOLSIZE,
+  db_min_pool: value.MINPOOLSIZE,
+  db_url: value.DB_URL,
+  db_name: value.DB_NAME,
+  log_level: value.LOG_LEVEL,
+  JWTKEY:value.JWTKEY
+};
+
+export { env };
