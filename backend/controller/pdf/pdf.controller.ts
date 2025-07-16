@@ -1,10 +1,8 @@
 import type { Request, Response } from "express"
 import puppeteer from "puppeteer";
-import { errorParser } from "../../utils/utils";
 import { env } from "../../config/envconfig";
-import { createLogger } from "../../utils/logger";
+import { emitter } from "../../utils/emiter";
 const port = env.port;
-const logger = createLogger();
 
 const generatePdf = async (req: Request, res: Response) => {
     try {
@@ -48,11 +46,15 @@ const generatePdf = async (req: Request, res: Response) => {
         });
 
         res.send(pdfBuffer);
-    } catch (error) {
-        const err = await errorParser(error, generatePdf.name, 'fatal');
-        err.message = 'Failed to generate PDF'
-        logger.fatal(err.message, err);
-        res.status(500).send(err);
+    } catch (error:any) {
+        emitter.emit('error', {
+            msg: error.message,
+            err: error,
+            level: error.level,
+            code: 500,
+            methodName: generatePdf.name
+        })
+        res.status(500).send(error);
     }
 }
 

@@ -58,7 +58,8 @@ const ConsoleTransport: LogTransport = {
         console.log(message, ...meta);
     }
 };
+const logger = createLogger()
 
 export {
-    createLogger
+    logger
 }

@@ -1,17 +1,16 @@
 import express from 'express';
-import { errorParser } from '../utils/utils';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 import minifyHTML from 'express-minify-html';
 import type { routeRegistration } from '../types/types';
 import { cv, login, pdf } from './routes';
-import { apiHeartBeat, globalErrorHandler, routerSanity } from '../middleware/validators';
+import { apiHeartBeat, globalErrorHandler } from '../middleware/validators';
 import { env } from '../config/envconfig';
 import { connectToDatabase } from '../config/dbconfig';
-import { createLogger } from '../utils/logger';
+import { centralLoggingEmitter, emitter } from '../utils/emiter';
+import { AppError } from '../types/express-error';
 
-const logger = createLogger();
 const port = env.port
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,9 +37,11 @@ const routePaths: routeRegistration = [
   }
 ];
 
+
 const initializeApp = async (app: express.Express) => {
   try {
     // 👇 Enable compression to reduce response size
+    await centralLoggingEmitter()
     await connectToDatabase();
     app.use(compression());
     // 👇 Enable EJS view engine and template caching
@@ -75,11 +76,14 @@ const initializeApp = async (app: express.Express) => {
 
     // 👇 Register routes
     for (const routes of routePaths) {
-      logger.info(`Route Path: ${rootRoutePath + routes.routepath}`);
+      emitter.emit('log', {
+        msg: `Route Path: ${rootRoutePath + routes.routepath}`,
+        level: 'info'
+      })
       const router = await routes.router(...routes.authMiddleware, ...routes.middlewares);
       if (router) {
         app.use(routes.routepath, router);
-      } 
+      }
     }
 
 
@@ -87,11 +91,20 @@ const initializeApp = async (app: express.Express) => {
     app.use(globalErrorHandler);
 
     app.listen(port, () => {
-      logger.info(`🚀 Server running on port ---> ${port}`);
+      emitter.emit('log', {
+        msg: `🚀 Server running on port ---> ${port}`,
+        level: 'info'
+      })
     });
   } catch (error: any) {
-    const err = await errorParser(error, error.methodName);
-    logger[err.level](err.name,err.message, err);
+    const err = new AppError(error.stack, error.message, 500, initializeApp.name, 'Server Error');
+    emitter.emit('error', {
+      msg: err.message,
+      err: err.stack,
+      level: err.level,
+      code: err.statusCode,
+      methodName: err.methodName
+    })
   }
 };
 

@@ -1,5 +1,6 @@
 
 import { AppError } from '../types/express-error';
+import { emitter } from '../utils/emiter';
 import { envSchema } from './env.validation';
 
 // Step 2: Validate process.env 
@@ -11,12 +12,21 @@ const { error, value } = envSchema.validate(process.env, {
 
 // Step 3: If validation fails, throw AppError
 if (error) {
-  throw new AppError(
+  const err = new AppError(
+    'On Env',
     `⚠️ Environment variable validation error:\n${error.message}`,
     500,
     'envconfig',
     'fatal'
   );
+  emitter.emit('error', {
+    msg: err.message,
+    err: err,
+    level: err.level,
+    code: 500,
+    methodName: err.name
+  })
+  throw err;
 }
 
 // Step 4: Safely extract env values
@@ -31,7 +41,7 @@ const env = {
   db_url: value.DB_URL,
   db_name: value.DB_NAME,
   log_level: value.LOG_LEVEL,
-  JWTKEY:value.JWTKEY
+  JWTKEY: value.JWTKEY
 };
 
 export { env };

@@ -9,7 +9,8 @@ const hCvTemplate = async (): Promise<{ errorCode: cvErrorCode, code: number, da
     try {
         const populatedUser = await UserVault.findOne({ name: "Vipul Singh" }).populate('cv').lean();
         if (!populatedUser || (populatedUser && !populatedUser.cv)) {
-            throw errorGenerator("Db Error", 'USER_DATA_DOES_NOT_EXIST', 500, 'error', hCvTemplate.name);
+            const err = await errorGenerator("Db Error", 'USER_DATA_DOES_NOT_EXIST', 500, 'error', hCvTemplate.name, "On " + hCvTemplate.name);
+            throw err
         }
         const resumeData: CvData = populatedUser.cv as CvData
         return {
@@ -17,9 +18,8 @@ const hCvTemplate = async (): Promise<{ errorCode: cvErrorCode, code: number, da
             data: resumeData,
             code: 200
         }
-    } catch (error) {
-        const errorData = await errorParser(error, hCvTemplate.name, 'error');
-        throw (errorData)
+    } catch (error: any) {
+        throw (error)
     }
 }
 export {

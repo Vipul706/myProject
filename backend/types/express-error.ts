@@ -4,7 +4,9 @@ export class AppError extends Error {
   statusCode: number;
   level!: LogLevel;
   methodName: string;
+  stack?: string | undefined;
   constructor(
+    stack?:string,
     message?: string,
     statusCode: number = 500,
     methodName?: string,
@@ -16,6 +18,7 @@ export class AppError extends Error {
     this.level = level!;
     this.statusCode = statusCode;
     this.methodName = methodName!
+    this.stack = stack
   }
 
   toJSON() {
@@ -24,7 +27,8 @@ export class AppError extends Error {
       level: this.level,
       name: this.name,
       message: this.message,
-      methodName:this.methodName
+      methodName:this.methodName,
+      strack:this.stack
     };
   }
 }

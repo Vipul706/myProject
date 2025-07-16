@@ -4,11 +4,8 @@ const { blackBox } = models
 import type { LogLevel, ParsedError } from "../types/types";
 import { env } from '../config/envconfig';
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
-import { define } from '../config/define';
-import { compare, hash } from 'bcryptjs';
 
 const secret = new TextEncoder().encode(env.JWTKEY);
-const saltRounds = 10;
 
 async function errorParser(error: any, methodName: string, level: LogLevel = 'fatal', code: number = 500): Promise<ParsedError> {
     const err = await blackBox.findOne({ stack: error.stack, method: methodName })
@@ -42,13 +39,14 @@ async function errorParser(error: any, methodName: string, level: LogLevel = 'fa
     };
 }
 
-function errorGenerator(fnName: string, message: string, code: number, level: LogLevel, method: string) {
+async function errorGenerator(fnName: string, message: string, code: number = 500, level: LogLevel = 'fatal', method: string = '',stack:string) {
     const error = new AppError();
     error.message = message
     error.name = fnName
     error.level = level
     error.statusCode = code
     error.methodName = method
+    error.stack  = stack
     return error
 }
 
@@ -73,5 +71,5 @@ export {
     errorParser,
     errorGenerator,
     createToken,
-    verifyToken
+    verifyToken,
 };

@@ -8,7 +8,7 @@ const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is ke
 
 const hLogin = async (body: login, authToken: string): Promise<{
     errorCode: loginErrorCode,
-    code: number,
+    statusCode: number,
     token?: string
 }> => {
     try {
@@ -18,7 +18,7 @@ const hLogin = async (body: login, authToken: string): Promise<{
         if (!userData) {
             return {
                 errorCode: 'USER_DOES_NOT_EXIST',
-                code: 404
+                statusCode: 404
             };
         }
 
@@ -26,14 +26,14 @@ const hLogin = async (body: login, authToken: string): Promise<{
         if (!check) {
             return {
                 errorCode: 'INVALID_ACCESS',
-                code: 401
+                statusCode: 401
             };
         }
 
         const token = await createToken(userData); // Only run if password is valid
         return {
             errorCode: 'NO_ERROR',
-            code: 200,
+            statusCode: 200,
             token
         };
     } catch (error) {

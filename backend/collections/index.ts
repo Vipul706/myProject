@@ -1,9 +1,8 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { createLogger } from "../utils/logger";
 import { readdirSync } from "fs";
 import { join, resolve } from "path";
+import { emitter } from "../utils/emiter";
 
-const logger = createLogger();
 
 // 👇️ Helper type to preserve full typings
 type RegisteredModel<T = any> = Model<T, {}, {}, {}, any, Schema<T>>;
@@ -21,17 +20,29 @@ export const registerCollections = () => {
 
                 if (modelName && schema) {
                     registeredModels[modelName] = mongoose.model(modelName, schema);
-                    logger.info(`✅ Model registered: ${modelName}`);
+                    emitter.emit('log', {
+                        msg: `✅ Model registered: ${modelName}`,
+                        level: 'info'
+                    })
                 } else {
-                    logger.warn(`⚠️ Skipping file (missing modelName or schema): ${file}`);
+                    emitter.emit('log', {
+                        msg: `⚠️ Skipping file (missing modelName or schema): ${file}`,
+                        level: 'warn'
+                    })
                 }
             }
         }
 
-        logger.info('📦 Collections Registered');
+        emitter.emit('log', {
+            msg: `📦 Collections Registered`,
+            level: 'info'
+        })
         return registeredModels;
     } catch (error) {
-        logger.error("❌ Error registering collections", error);
+        emitter.emit('log', {
+            msg: `❌ Error registering collections`,
+            level: 'error'
+        })
         throw error;
     }
 };

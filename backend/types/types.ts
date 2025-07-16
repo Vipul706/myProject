@@ -23,10 +23,30 @@ type routeRegistration = {
   authMiddleware: MiddlewareFn[],
 }[];
 
+interface ErrorLogData {
+    msg: string,
+    err?: any,
+    level: LogLevel,
+    code: number,
+    methodName: string
+}
+interface logData {
+ msg:string,
+ level:LogLevel
+}
+
+interface EventsMap {
+    log: (data: logData) => void;
+    error: (err: ErrorLogData) => void;
+}
+
 export type {
   LogMethod,
   LogLevel,
   LogTransport,
   ParsedError,
-  routeRegistration
+  routeRegistration,
+  ErrorLogData,
+  logData,
+  EventsMap
 }

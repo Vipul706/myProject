@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { env } from "./envconfig";
-import { createLogger } from "../utils/logger";
+import { emitter } from "../utils/emiter";
 
 const connection = mongoose
-const logger = createLogger();
 
 const options = {
     user: env.db_user,
@@ -21,7 +20,10 @@ const options = {
 async function connectToDatabase() {
     try {
         await connection.connect(env.db_url + env.db_name, options);
-        logger.info("✅ MongoDB connected");
+        emitter.emit('log', {
+            msg: `✅ MongoDB connected`,
+            level: 'info'
+        })
     } catch (error) {
         throw (error);
     }

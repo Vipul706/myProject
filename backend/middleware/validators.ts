@@ -1,11 +1,9 @@
-import type { NextFunction, Request, RequestHandler, Response } from "express";
-import { createLogger } from "../utils/logger";
+import type { NextFunction, Request, Response } from "express";
 import { models } from "../collections";
-import { errorParser } from "../utils/utils";
-import type { AppError } from "../types/express-error";
+import { AppError } from "../types/express-error";
+import { emitter } from "../utils/emiter";
 const { pulseStream } = models
 
-const logger = createLogger();
 
 const routerSanity = (request: Request, response: Response, next: NextFunction): void => {
     request.validRoute = true;
@@ -14,7 +12,10 @@ const routerSanity = (request: Request, response: Response, next: NextFunction):
 
 const apiHeartBeat = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        logger.info(`${request.method} ${(new Date()).toLocaleTimeString()} api request --->  ` + request.headers.host || request.hostname + request.baseUrl)
+        emitter.emit('log',{
+            msg:`${request.method} ${(new Date()).toLocaleTimeString()} api request --->  ` + request.headers.host || request.hostname + request.baseUrl,
+            level:'info'
+        })
         fireAndForgetPulse(request);
         next();
     } catch (error) {
@@ -24,7 +25,22 @@ const apiHeartBeat = async (request: Request, response: Response, next: NextFunc
 
 function fireAndForgetPulse(request: Request, attempt = 1) {
     if (attempt > 3) {
-        return logger.fatal('Pulse Stream error', errorParser('Max retries reached', request.method, 'fatal'));
+        const err = new AppError(
+            'Pulse Stream error',
+            'Max retries reached',
+            500,
+            fireAndForgetPulse.name,
+            request.method,
+            'fatal'
+        )
+        emitter.emit('error', {
+            msg: err.message,
+            err: err.stack,
+            level: err.level,
+            code: err.statusCode,
+            methodName: err.methodName
+        })
+        return err;
     }
     pulseStream.create({
         originalUrl: request.headers.host || request.hostname + request.originalUrl,
@@ -32,8 +48,13 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
         host: request.host,
         method: request.method,
     }).catch(err => {
-        logger.warn(`Retrying pulse stream write. Attempt ${attempt}`);
-        logger.error('Pulse Stream error', errorParser(err, request.method, 'error'));
+        emitter.emit('error', {
+            msg: err.message,
+            err: err,
+            level: err.level,
+            code: 500,
+            methodName: fireAndForgetPulse.name
+        })
         // Retry with delay
         setTimeout(() => fireAndForgetPulse(request, attempt + 1), 200 * attempt); // Exponential backoff
     });
@@ -41,9 +62,14 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
 
 
 const globalErrorHandler = async (err: AppError, req: Request, res: Response, next: NextFunction) => {
-   const error = await errorParser(err, err.name, err.level);
-    logger[error.level](error.message, err);
-    res.status(error.code).send(err);
+    emitter.emit('error', {
+        msg: err.message,
+        err: err,
+        level: err.level,
+        code: err.statusCode,
+        methodName: err.methodName
+    })
+    res.status(err.statusCode).send(err);
 }
 
 export { routerSanity, apiHeartBeat, globalErrorHandler };
