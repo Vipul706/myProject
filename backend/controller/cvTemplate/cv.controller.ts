@@ -14,7 +14,7 @@ const getCvTemp = async (request: Request, reply: Response) => {
         const res = await hCvTemplate()
         const { errorCode, code, data } = res
         if (errorCode !== 'NO_ERROR') {
-            throw errorGenerator(errorCode, errorCode, code, 'error', getCvTemp.name, 'None');
+            throw await errorGenerator(errorCode, errorCode, code, 'error', getCvTemp.name, 'None');
         }
         reply.render('cv_templates/cv.ejs', { data: data });
     } catch (error: any) {

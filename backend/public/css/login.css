@@ -1,0 +1,400 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  background: #e5ecff;
+  position: relative;
+}
+
+.auth-shell {
+  position: absolute;
+  width: 65%;
+  height: 75%;
+  background: transparent;
+  border-radius: 20px;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-evenly;
+  overflow: hidden;
+  box-shadow: 5px 5px 20px -3px;
+}
+
+.boxOne,
+.boxTwo {
+  width: 100%;
+  transition: background 1s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boxOne {
+  background: white;
+}
+
+.boxTwo {
+  background: linear-gradient(
+    166deg,
+    rgba(87, 32, 227, 1) 0%,
+    rgba(143, 87, 199, 1) 100%
+  );
+}
+
+.boxOneChangeColor {
+  background: rgb(11 131 108);
+}
+
+.boxTwoChangeColor {
+  background: white;
+}
+
+.divider {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    rgba(184, 168, 237, 1) 0%,
+    rgba(180, 128, 232, 1) 50%,
+    rgba(140, 56, 224, 0.94) 100%
+  );
+  width: 7%;
+  height: 6%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  border-radius: 34px;
+  box-shadow: 3px 5px 10px -5px #ffffff;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.toggleDivider {
+  background: #6ee7b7;
+  box-shadow: 2px 7px 10px -5px #58fd83;
+}
+
+.sliderButton {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  background: white;
+  width: 1.5svw;
+  height: 1.5svw;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.3s ease;
+}
+
+.sliderButton.active {
+  left: calc(100% - 1.8svw);
+}
+
+.sliderButton > img {
+  height: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: rotate(0deg) translate(-50%, -50%);
+  transition: filter 0.3s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.rotateImage {
+  filter: invert(45%) sepia(89%) saturate(600%) hue-rotate(115deg)
+    brightness(92%) contrast(87%);
+  transform: translate(-50%, -50%) rotate(180deg) !important;
+}
+
+.signup,
+.greetings,
+.login {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease-in-out;
+  width: 80%;
+  text-align: center;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 👇 Fade-out: no delay, smooth */
+.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 👇 Fade-in: no delay */
+.fade-in {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.signup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-left: 75px;
+  gap: 10px;
+  height: 100%;
+  padding-top: 21svh;
+}
+
+.signup > h2 {
+  font-size: 1.7rem;
+}
+
+.signup > span {
+  color: rgb(75 85 99);
+  margin-bottom: 1.3rem;
+}
+
+.formField {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.formField > label {
+  font-size: 0.88rem;
+  color: rgb(57 68 84);
+  font-weight: 500;
+}
+
+.formField > input {
+  width: 85%;
+  height: 45px;
+  border: 1px solid #80808066;
+  border-radius: 10px;
+  padding: 15px;
+  color: black; /* user input color */
+  font-weight: 500;
+}
+
+.formField > input::placeholder {
+  color: gray; /* placeholder color */
+  opacity: 1; /* ensures full visibility in some browsers */
+}
+
+form#loginForm {
+  display: flex;
+  width: 100%;
+  gap: 5px;
+  flex-direction: column;
+}
+
+form#loginForm > span {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #5c5ce6;
+  text-align: end;
+  cursor: pointer;
+}
+
+form#loginForm > button {
+  width: 85%;
+  height: 45px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  background: #4f46e5;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.formField > input:focus {
+  outline-color: #6366f1;
+}
+
+div#welcome {
+  height: 100%;
+  width: 85%;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  gap: 35px;
+  font-size: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+div#welcome > span {
+  text-align: center;
+  line-height: 2rem;
+}
+
+.intro > img {
+  height: 35px;
+  transform: rotate(-45deg);
+}
+
+.introGraphic {
+  height: 4svw;
+  width: 4svw;
+  background: #8160e4;
+  display: flex;
+  border-radius: 50%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons .introGraphic {
+  height: 3svw;
+  width: 3svw;
+}
+
+.icons .introGraphic > img {
+  height: 25px;
+}
+
+.circle {
+  position: absolute;
+  width: 6svw;
+  height: 6svw;
+  background: #8160e4;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.position {
+  right: 0svw;
+  top: 3svw;
+  transform: translate(-50%);
+}
+
+.icons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+}
+
+.iconBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.8rem;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.downPosition {
+  transform: translate(-50%);
+  bottom: 2svw;
+  left: 2svw;
+}
+
+div#greetings {
+  height: 100%;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  gap: 35px;
+  font-size: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding-right: 40px;
+}
+
+.greetings .circle,
+.greetings .introGraphic {
+  background: #209a79;
+}
+
+.greetings .position {
+  left: 3svw;
+  top: 3svw;
+  transform: translate(-50%);
+}
+
+.greetings .downPosition {
+  transform: translate(-50%);
+  bottom: 2svw;
+  left: 24svw;
+}
+
+.greetings .intro > img {
+  transform: unset;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-left: 55px;
+  gap: 10px;
+  height: 100%;
+  padding-top: 20svh;
+}
+
+.login form#loginForm > span {
+  text-align: start;
+  margin-left: -55px;
+  color: #07986a;
+}
+
+.login > span {
+  padding-bottom: 30px;
+}
+
+.authButtons {
+  display: flex;
+  justify-content: space-between;
+  width: 85%;
+  padding-top: 20px;
+  padding-bottom: 5px;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.remButton {
+  color: #767676;
+  display: flex;
+  gap: 10px;
+}
+
+.authButtons > span {
+  color: #059669;
+}
+
+.login > h2 {
+  font-size: 1.7rem;
+}
+
+.login .formField > input:focus {
+  outline-color: #10b981;
+}

@@ -3,6 +3,7 @@ import { logger } from "./logger";
 import type { ErrorLogData, EventsMap, logData } from "../types/types";
 import { errorGenerator, errorParser } from "./utils";
 import { env } from "../config/envconfig";
+import { logListener, errorListener } from "./eventListerners";
 
 class TypedEmitter extends EventEmitter {
     override on<K extends keyof EventsMap>(event: K, listener: EventsMap[K]): this {
@@ -16,24 +17,7 @@ class TypedEmitter extends EventEmitter {
 
 const emitter = new TypedEmitter();
 
-export const errorListener = async (logData: ErrorLogData) => {
-    const { message, name } = logData.err;
-    const err = await errorGenerator(
-        name,
-        message,
-        logData.code,
-        logData.level,
-        logData.methodName,
-        logData.err.stack
-    );
-    const error = await errorParser(err, err.methodName);
-    logger[error.level](`🧨 Emitter Log: Anomaly flagged in ${error.method}`, error);
-    return error;
-};
 
-export const logListener = (log: logData) => {
-    logger[log.level](`🎯 Intel Drop → "${log.msg}" [Severity: ${log.level}]`);
-};
 
 const eventHandlers = {
     log: logListener,
@@ -55,7 +39,7 @@ const eventTurnOff = () => {
 const centralLoggingEmitter = async () => {
     try {
         if (env.pro_env !== 'production') {
-            logger.info('Centeral Logger Initialize')
+            logger.info('🎯 Centeral Logger Initialize')
             eventTurnOn();
         }
     } catch (error: any) {

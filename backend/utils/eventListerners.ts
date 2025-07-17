@@ -1,0 +1,27 @@
+import type { ErrorLogData, logData } from "../types/types";
+import { logger } from "./logger";
+import { errorGenerator, errorParser } from "./utils";
+
+const errorListener = async (logData: ErrorLogData) => {
+    const { message, name } = logData.err;
+    const err = await errorGenerator(
+        name,
+        message,
+        logData.code,
+        logData.level,
+        logData.methodName,
+        logData.err.stack
+    );
+    const error = await errorParser(err, err.methodName);
+    logger[error.level](`🧨 Emitter Log: Anomaly flagged in ${error.method}`, error);
+    return error;
+};
+
+const logListener = (log: logData) => {
+    logger[log.level](`🎯 Intel Drop → "${log.msg}" [Severity: ${log.level}]`);
+};
+
+export {
+    logListener,
+    errorListener
+}

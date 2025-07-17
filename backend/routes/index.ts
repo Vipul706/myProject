@@ -8,7 +8,7 @@ import { cv, login, pdf } from './routes';
 import { apiHeartBeat, globalErrorHandler } from '../middleware/validators';
 import { env } from '../config/envconfig';
 import { connectToDatabase } from '../config/dbconfig';
-import { centralLoggingEmitter, emitter } from '../utils/emiter';
+import { centralLoggingEmitter, emitter, eventTurnOff } from '../utils/emiter';
 import { AppError } from '../types/express-error';
 
 const port = env.port
@@ -98,6 +98,7 @@ const initializeApp = async (app: express.Express) => {
     });
   } catch (error: any) {
     const err = new AppError(error.stack, error.message, 500, initializeApp.name, 'Server Error');
+    eventTurnOff()
     emitter.emit('error', {
       msg: err.message,
       err: err.stack,
