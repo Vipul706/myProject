@@ -1,9 +1,9 @@
 import EventEmitter from "events";
 import { logger } from "./logger";
-import type { ErrorLogData, EventsMap, logData } from "../types/types";
-import { errorGenerator, errorParser } from "./utils";
+import type { EventsMap } from "../types/types";
 import { env } from "../config/envconfig";
 import { logListener, errorListener } from "./eventListerners";
+import { registerCrons, stopCrons } from "../crons";
 
 class TypedEmitter extends EventEmitter {
     override on<K extends keyof EventsMap>(event: K, listener: EventsMap[K]): this {
@@ -17,31 +17,29 @@ class TypedEmitter extends EventEmitter {
 
 const emitter = new TypedEmitter();
 
-
-
 const eventHandlers = {
     log: logListener,
     error: errorListener
 } as const;
 
-const eventTurnOn = () => {
+const toggleEmitter = (action: "on" | "off") => {
     (Object.keys(eventHandlers) as (keyof typeof eventHandlers)[]).forEach((key) => {
-        emitter.on(key, eventHandlers[key]);
-    });
-};
-
-const eventTurnOff = () => {
-    for (const key in eventHandlers) {
-        emitter.off(key, eventHandlers[key as keyof typeof eventHandlers]);
-    }
-};
+        if (action === 'on') {
+            emitter.on(key, eventHandlers[key]); // safely typed
+        } else {
+            stopCrons()
+            emitter.off(key, eventHandlers[key]); // safely typed
+        }
+    })
+}
 
 const centralLoggingEmitter = async () => {
     try {
         if (env.pro_env !== 'production') {
             logger.info('🎯 Centeral Logger Initialize')
-            eventTurnOn();
+            toggleEmitter('on');
         }
+        registerCrons()
     } catch (error: any) {
         const err = await errorListener({
             err: error,
@@ -54,4 +52,4 @@ const centralLoggingEmitter = async () => {
     }
 };
 
-export { centralLoggingEmitter, emitter, eventTurnOff };
+export { centralLoggingEmitter, emitter, toggleEmitter };

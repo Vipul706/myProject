@@ -5,17 +5,20 @@ import compression from 'compression';
 import minifyHTML from 'express-minify-html';
 import type { routeRegistration } from '../types/types';
 import { cv, login, pdf } from './routes';
-import { apiHeartBeat, globalErrorHandler } from '../middleware/validators';
+import { apiHeartBeat, globalErrorHandler, routerSanity } from '../middleware/validators';
 import { env } from '../config/envconfig';
 import { connectToDatabase } from '../config/dbconfig';
-import { centralLoggingEmitter, emitter, eventTurnOff } from '../utils/emiter';
+import { centralLoggingEmitter, emitter, toggleEmitter } from '../utils/emiter';
 import { AppError } from '../types/express-error';
+import { dashboardRoutes } from './dashboard/dashboard';
+import { seedUserWithResume } from '../utils/utils';
 
 const port = env.port
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootRoutePath = env.app_base_path;
+
 const routePaths: routeRegistration = [
   {
     routepath: '/cv',
@@ -34,6 +37,12 @@ const routePaths: routeRegistration = [
     router: login,
     middlewares: [],
     authMiddleware: [apiHeartBeat]
+  },
+  {
+    routepath: '/dashboard',
+    router: dashboardRoutes,
+    middlewares: [],
+    authMiddleware: [apiHeartBeat, routerSanity]
   }
 ];
 
@@ -43,6 +52,7 @@ const initializeApp = async (app: express.Express) => {
     // 👇 Enable compression to reduce response size
     await centralLoggingEmitter()
     await connectToDatabase();
+    
     app.use(compression());
     // 👇 Enable EJS view engine and template caching
     app.set('views', path.join(__dirname, '../views'));
@@ -87,9 +97,9 @@ const initializeApp = async (app: express.Express) => {
     }
 
 
-    // GlobalErrorHandler Registered
+    //  GlobalErrorHandler Registered
     app.use(globalErrorHandler);
-
+   await seedUserWithResume()
     app.listen(port, () => {
       emitter.emit('log', {
         msg: `🚀 Server running on port ---> ${port}`,
@@ -98,7 +108,7 @@ const initializeApp = async (app: express.Express) => {
     });
   } catch (error: any) {
     const err = new AppError(error.stack, error.message, 500, initializeApp.name, 'Server Error');
-    eventTurnOff()
+    toggleEmitter('off')
     emitter.emit('error', {
       msg: err.message,
       err: err.stack,

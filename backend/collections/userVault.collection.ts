@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs'; // or 'bcrypt'
+import bcrypt from 'bcryptjs';
+
 const allowedDomains = ['gmail.com', 'mycompany.com'];
 
 const userSchema = new mongoose.Schema({
@@ -27,21 +28,33 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
-    createdAt: {
+    prCounter: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    lastPasswordResetAt: {
         type: Date,
-        default: Date.now
+        default: null
+    },
+    token: {
+        type: String,
+        default: null,
+        select: false // Optional: don't return token by default in queries
     },
     cv: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "DeepResume"
-    },
+    }
+}, {
+    timestamps: true
 });
 
 // 🔐 Pre-save hook to hash password
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
-        const salt = await bcrypt.genSalt(10); // You can increase rounds for more security
+        const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (err: any) {
@@ -50,4 +63,4 @@ userSchema.pre('save', async function (next) {
 });
 
 export const modelName = "UserVault";
-export const schema = userSchema
+export const schema = userSchema;

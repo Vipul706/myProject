@@ -201,14 +201,16 @@ html {
   opacity: 1; /* ensures full visibility in some browsers */
 }
 
-form#loginForm {
+form#loginForm,
+form#signupForm {
   display: flex;
   width: 100%;
   gap: 5px;
   flex-direction: column;
 }
 
-form#loginForm > span {
+form#loginForm > span,
+form#signupForm > span {
   font-weight: 500;
   font-size: 0.8rem;
   color: #5c5ce6;
@@ -216,7 +218,8 @@ form#loginForm > span {
   cursor: pointer;
 }
 
-form#loginForm > button {
+form#loginForm > button,
+form#signupForm > button {
   width: 85%;
   height: 45px;
   font-size: 1rem;
@@ -377,7 +380,7 @@ div#greetings {
   width: 85%;
   padding-top: 20px;
   padding-bottom: 5px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 

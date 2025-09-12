@@ -1,0 +1,399 @@
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.container {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.sideBar {
+  width: 20%;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 8, 252, 1) 0%,
+    rgba(78, 73, 227, 1) 50%,
+    rgba(110, 86, 219, 1) 100%
+  );
+}
+
+.optionsContainer {
+  gap: 50px;
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+  padding-top: 100px;
+  color: white;
+  font-size: 1.8rem;
+}
+
+img {
+  height: 5svh;
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: background-color 0.5s ease;
+  transition: opacity 0.5s ease;
+  height: 9svh;
+  width: 80%;
+  border-radius: 15px;
+  padding-left: 15px;
+  cursor: pointer;
+}
+
+.options:hover,
+.selected {
+  background-color: #767bf0;
+}
+
+.hide {
+  display: none !important;
+}
+
+.cv {
+  min-height: 100svh;
+  margin: auto;
+  width: 70%;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.content {
+  width: 80%;
+}
+
+.selective {
+  display: flex;
+  width: 98%;
+  padding-bottom: 15px;
+  gap: 5%;
+  border-bottom: 1px solid #e7f0f8;
+  font-size: 2rem;
+  flex-direction: row;
+  color: #2c446a;
+}
+
+.selective > span {
+  width: 15%;
+  position: relative;
+}
+
+.selective > span:hover {
+  color: black;
+}
+
+.selective > span::before {
+  content: '';
+  display: block;
+  width: 100px;
+  position: absolute;
+  height: 1%;
+  bottom: -15px;
+}
+
+/* Apply hover to the parent span */
+.selective > span:hover::before {
+  background-color: black;
+}
+
+/* Active (clicked) state */
+.selective > span.cvSelective {
+  color: black;
+}
+
+.selective > span.cvSelective::before {
+  background-color: black;
+}
+
+.flex-wrapbox {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  gap: 20px;
+  padding-left: 15px;
+  font-size: 1.3rem;
+  text-transform: capitalize;
+  font-weight: 400;
+}
+
+.flex-wrapbox input {
+  height: 35px;
+  border: 1px solid #dce9f5;
+  border-radius: 7px;
+  padding-left: 10px;
+}
+
+.expBlock {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+form.CvForm {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  flex-direction: column;
+}
+
+.radioButtons {
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+}
+
+.radioButton {
+  display: flex;
+  font-size: 1rem;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-wrapbox textarea {
+  border: 1px solid #dce9f5;
+  border-radius: 7px;
+  height: 37px;
+  padding: 10px;
+  overflow: hidden;
+  resize: none;
+  box-sizing: border-box;
+}
+
+/* 🎯 Final animated glowing outline */
+.flex-wrapbox textarea:focus-visible,
+.flex-wrapbox input:focus-visible {
+  outline: none;
+}
+
+.CvForm > h3 {
+  padding-left: 15px;
+}
+
+.expPreview,
+.skillPreview,
+.languagePreview {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.expPreviewBlock {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 0.95rem;
+  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  align-items: flex-start;
+  min-width: 22svw;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); /* Indigo shadow */
+  color: #1e1e2f; /* Dark readable text */
+  border: 1px solid rgba(147, 197, 253, 0.6); /* Light blue border */
+}
+
+/* Glowing button with transition to fill */
+.removeBtn {
+  background: transparent;
+  color: #6366f1;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: 2px solid #6366f1;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+}
+
+.removeBtn:hover {
+  color: white;
+}
+
+.removeBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+  transition: width 0.4s ease;
+  z-index: 0;
+}
+
+.removeBtn:hover::before {
+  width: 100%;
+  z-index: -1;
+}
+
+.removeBtn span {
+  position: relative;
+  z-index: 1;
+  color: #6366f1;
+  transition: color 0.4s ease;
+}
+
+.removeBtn:active span {
+  color: #ffffff;
+}
+
+.addBtn {
+  position: relative;
+  padding: 12px 26px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e40af; /* Deep Blue */
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #60a5fa; /* Blue border */
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0px rgba(96, 165, 250, 0.2);
+}
+
+.addBtn span {
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+/* Glowing border on hover */
+.addBtn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(147, 197, 253, 0.4),
+    transparent 60%
+  );
+  transition: all 0.3s ease;
+  z-index: 0;
+}
+
+/* Inner fill on active */
+.addBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(147, 197, 253, 0.2);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease-in-out;
+  z-index: 0;
+}
+
+/* Hover effects */
+.addBtn:hover {
+  color: #1d4ed8;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.4), 0 0 20px rgba(96, 165, 250, 0.2);
+}
+.addBtn:hover::before {
+  top: -25%;
+  left: -25%;
+}
+.addBtn:active::after {
+  transform: scaleX(1);
+}
+
+.skillPreviewBlock,
+.languagePreviewBlock {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 0.95rem;
+  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  align-items: flex-start;
+  min-width: 22svw;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); /* Indigo shadow */
+  color: #1e1e2f; /* Dark readable text */
+  border: 1px solid rgba(147, 197, 253, 0.6); /* Light blue border */
+}
+
+/* Glowing button with transition to fill */
+.skillRemoveBtn {
+  background: transparent;
+  color: #6366f1;
+  border-radius: 7px;
+  font-size: 0.6rem;
+  margin-left: 10px;
+  border: 2px solid #6366f1;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: CAPITALIZE;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+  height: 4svh;
+  width: 9svh;
+}
+
+.skillRemoveBtn:hover {
+  color: white;
+}
+
+.skillRemoveBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+  transition: width 0.4s ease;
+  z-index: 0;
+}
+
+.skillRemoveBtn:hover::before {
+  width: 100%;
+  z-index: -1;
+}
+
+.skillRemoveBtn span {
+  position: relative;
+  z-index: 1;
+  color: #6366f1;
+  transition: color 0.4s ease;
+}
+
+.skillRemoveBtn:active span {
+  color: #ffffff;
+}

@@ -13,11 +13,11 @@
           <div class="signup fade-in" id="signup">
             <h2>Create an Account</h2>
             <span>Join us and start your journey today</span>
-            <form action="/login/access" id="loginForm" method="post">
+            <form id="signupForm">
               <div class="formField">
                 <label for="email">Email Address</label>
                 <input
-                  id="email"
+                  id="signupEmail"
                   name="email"
                   type="email"
                   autocomplete="email"
@@ -29,7 +29,7 @@
               <div class="formField">
                 <label for="pass">Password</label>
                 <input
-                  id="pass"
+                  id="signupPass"
                   name="pass"
                   type="password"
                   autocomplete="current-password"
@@ -78,11 +78,11 @@
           <div class="login fade-out" id="login">
             <h2>Login to Your Account</h2>
             <span>Welcome back! Please enter your credentials </span>
-            <form action="/login/access" id="loginForm" method="post">
+            <form id="loginForm">
               <div class="formField">
                 <label for="email">Email Address</label>
                 <input
-                  id="email"
+                  id="loginEmail"
                   name="email"
                   type="email"
                   autocomplete="email"
@@ -94,7 +94,7 @@
               <div class="formField">
                 <label for="pass">Password</label>
                 <input
-                  id="pass"
+                  id="loginPass"
                   name="pass"
                   type="password"
                   autocomplete="current-password"
@@ -106,7 +106,7 @@
                   <input type="checkbox" id="remButton" />
                   <span>Remember me</span>
                 </div>
-                <span>Forgot password?</span>
+                <span id="forgotPassword">Forgot password?</span>
               </div>
               <button type="submit">Login</button>
             </form>
@@ -176,7 +176,6 @@
           el.classList.remove('fade-in')
           el.classList.add('fade-out')
         })
-
         elementsToShow.forEach(el => {
           el.classList.remove('fade-out')
           el.classList.add('fade-in')
@@ -193,7 +192,6 @@
             : [elements.login, elements.greetings]
         )
 
-        // Toggle styles for background and divider
         elements.boxOne.classList.toggle('boxOneChangeColor')
         elements.boxTwo.classList.toggle('boxTwoChangeColor')
         elements.divider.classList.toggle('toggleDivider')
@@ -212,6 +210,83 @@
       ;[elements.slider, elements.signUpButton, elements.loginButton].forEach(
         addToggleListener
       )
+
+      // ✅ Generic API handler
+      const handleAuthSubmit = async (formId, emailId, passId) => {
+        const form = document.getElementById(formId)
+        form.addEventListener('submit', async e => {
+          e.preventDefault()
+
+          const email = document.getElementById(emailId).value
+          const pass = document.getElementById(passId).value
+
+          const res = await fetch('/login/access', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, pass })
+          })
+
+          const data = await res.json()
+          const token = res.headers.get('token')
+
+          if (data.errorCode === 'NO_ERROR') {
+            sessionStorage.setItem('token', token)
+            window.location.href = data.redirectUrl
+          } else {
+            alert('Auth failed: ' + JSON.stringify(data))
+          }
+        })
+      }
+
+      // Apply to signup + login
+      handleAuthSubmit('signupForm', 'signupEmail', 'signupPass')
+      handleAuthSubmit('loginForm', 'loginEmail', 'loginPass')
+
+      // ✅ Clear inputs on DOM load
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input').forEach(input => (input.value = ''))
+      })
+
+      // ✅ Forgot password logic
+      document.addEventListener('DOMContentLoaded', () => {
+        const forgotBtn = document.getElementById('forgotPassword')
+        if (forgotBtn) {
+          forgotBtn.style.cursor = 'pointer'
+          forgotBtn.addEventListener('click', async () => {
+            const emailInput = document.getElementById('loginEmail')
+            const email = emailInput?.value.trim()
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!email || !emailRegex.test(email)) {
+              alert('Please enter a valid email address.')
+              return
+            }
+
+            try {
+              const res = await fetch('/login/forgotPassword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+              })
+
+              const data = await res.json()
+
+              if (data.errorCode === 'NO_ERROR') {
+                alert(
+                  'Password reset instructions have been sent to your email.'
+                )
+              } else {
+                alert(
+                  data.errorCode
+                    ? `Due to this Error ${data.errorCode} Something went wrong. Please try again.`
+                    : 'Something went wrong. Please try again.'
+                )
+              }
+            } catch (error) {
+              alert('Server error. Please try again later.')
+            }
+          })
+        }
+      })
     </script>
   </body>
 </html>

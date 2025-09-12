@@ -6,6 +6,9 @@ interface IUser {
     email: string;
     password: string;
     createdAt?: Date;
+    prCounter:number;
+    lastPasswordResetAt:Date;
+    token:string;
     cv?: Types.ObjectId | CvData;
 }
 interface IUserDocument extends IUser, Document { }

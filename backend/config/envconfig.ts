@@ -1,6 +1,5 @@
 
 import { AppError } from '../types/express-error';
-import { emitter } from '../utils/emiter';
 import { envSchema } from './env.validation';
 
 // Step 2: Validate process.env 
@@ -19,13 +18,7 @@ if (error) {
     'envconfig',
     'fatal'
   );
-  emitter.emit('error', {
-    msg: err.message,
-    err: err,
-    level: err.level,
-    code: 500,
-    methodName: err.name
-  })
+  console.log(err);
   throw err;
 }
 
@@ -41,7 +34,8 @@ const env = {
   db_url: value.DB_URL,
   db_name: value.DB_NAME,
   log_level: value.LOG_LEVEL,
-  JWTKEY: value.JWTKEY
+  JWTKEY: value.JWTKEY,
+  loginDashboardUrl: value.loginDashboardUrl
 };
 
 export { env };

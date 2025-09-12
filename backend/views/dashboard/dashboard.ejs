@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="sideBar">
+        <div class="optionsContainer">
+          <div class="options selected" id="cv">
+            <img src="/assets/cv.svg" alt="none" />
+            <span>CV</span>
+          </div>
+          <div class="options" id="blog">
+            <img src="/assets/blog.svg" alt="none" />
+            <span>Blog</span>
+          </div>
+          <div class="options" id="Scrapper">
+            <img src="/assets/scrapper.svg" alt="none" />
+            <span>Scrapper</span>
+          </div>
+          <div class="options" id="signOut">
+            <img src="/assets/logout.svg" alt="none" />
+            <span>Sign out</span>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="cv">
+          <div class="selective">
+            <span class="cvSelective">Form</span>
+            <span>Preview</span>
+          </div>
+          <form action="" class="CvForm" draggable="true" method="post">
+            <div class="name flex-wrapbox">
+              <span>name</span>
+              <input
+                type="text"
+                id="name"
+                autocomplete="name"
+                placeholder="Name"
+              />
+            </div>
+
+            <!-- EXPERIENCE -->
+            <h3>Experience</h3>
+            <div class="expBlock">
+              <div class="exp flex-wrapbox">
+                <span>Company Name</span>
+                <input type="text" name="compName" placeholder="Company Name" />
+              </div>
+              <div class="exp flex-wrapbox">
+                <span>Duration</span>
+                <div class="inputs">
+                  <input type="text" name="duration" placeholder="Start Year" />
+                  <input type="text" name="duration" placeholder="End Year" />
+                </div>
+              </div>
+              <div class="exp flex-wrapbox">
+                <span>Position</span>
+                <input
+                  type="text"
+                  name="position"
+                  placeholder="Software Engineer"
+                />
+              </div>
+              <div class="exp flex-wrapbox" style="gap: 3px">
+                <div class="radioButtons">
+                  <span>Pointer 1</span>
+                  <div class="radioButton">
+                    <input type="radio" name="pointerType" id="para" checked />
+                    <label for="para">Paragraph</label>
+                  </div>
+                  <div class="radioButton">
+                    <input type="radio" name="pointerType" id="bullets" />
+                    <label for="bullets">Bullet Points</label>
+                  </div>
+                </div>
+                <textarea id="pointers"></textarea>
+              </div>
+            </div>
+            <div class="expPreview"></div>
+            <div class="expButtons" style="margin: auto; margin-left: 360px">
+              <button type="button" class="addBtn" onclick="addExp('add')">
+                <span>Add Exp</span>
+              </button>
+            </div>
+
+            <!-- SKILLS -->
+            <h3>Skills</h3>
+            <div class="flex-wrapbox skills">
+              <input type="text" id="skills" />
+            </div>
+            <div class="skillPreview"></div>
+            <div class="expButtons" style="margin: auto; margin-left: 360px">
+              <button type="button" class="addBtn" onclick="addSkills('add')">
+                <span>Add Skill</span>
+              </button>
+            </div>
+
+            <!-- LANGUAGES -->
+            <h3>Languages</h3>
+            <div class="flex-wrapbox languages">
+              <input type="text" id="languages" />
+            </div>
+            <div class="languagePreview"></div>
+            <div class="expButtons" style="margin: auto; margin-left: 360px">
+              <button
+                type="button"
+                class="addBtn"
+                onclick="addLanguages('add')"
+              >
+                <span>Add Language</span>
+              </button>
+            </div>
+
+            <!-- ✅ SUBMIT BUTTON -->
+            <div
+              class="expButtons"
+              style="margin: auto; margin-left: 360px; margin-top: 20px"
+            >
+              <button type="submit" class="submitBtn">
+                <span>Submit</span>
+              </button>
+            </div>
+          </form>
+
+          <iframe src="" frameborder="0"></iframe>
+        </div>
+        <div class="blog hide">blog</div>
+        <div class="Scrapper hide">Scrapper</div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    function addExp(action) {
+      if (action !== 'add') return
+
+      const compName = document.querySelector('[name="compName"]')
+      const durationInputs = document.querySelectorAll('[name="duration"]')
+      const position = document.querySelector('[name="position"]')
+      const pointerText = document.querySelector('#pointers')
+      const paraRadio = document.querySelector('#para')
+      const previewContainer = document.querySelector('.expPreview')
+
+      const start = durationInputs[0]?.value.trim()
+      const end = durationInputs[1]?.value.trim()
+
+      if (
+        !compName.value.trim() ||
+        !start ||
+        !end ||
+        !position.value.trim() ||
+        !pointerText.value.trim()
+      ) {
+        alert('Please fill in all experience fields before adding.')
+        return
+      }
+
+      const expDiv = document.createElement('div')
+      expDiv.className = 'expPreviewBlock'
+
+      expDiv.innerHTML = `
+      <div style="display:flex;flex-direction: row;gap: 5px;">
+        <h4>Company Name: </h4> <p>${compName.value}</p>
+      </div>
+      <p><strong>Duration:</strong> ${start} - ${end}</p>
+      <p><strong>Position:</strong> ${position.value}</p>
+      <p><strong>Pointers:</strong></p>
+      ${
+        paraRadio.checked
+          ? `<p>${pointerText.value}</p>`
+          : `<ul>${pointerText.value
+              .split('\\n')
+              .map(line => `<li>${line}</li>`)
+              .join('')}</ul>`
+      }
+      <button type="button" class="removeBtn">Remove</button>
+    `
+
+      expDiv.querySelector('.removeBtn').addEventListener('click', () => {
+        expDiv.remove()
+      })
+
+      previewContainer.appendChild(expDiv)
+
+      compName.value = ''
+      durationInputs.forEach(input => (input.value = ''))
+      position.value = ''
+      pointerText.value = ''
+      paraRadio.checked = true
+    }
+
+    function addItem(
+      inputId,
+      previewSelector,
+      blockClass,
+      label,
+      maxItems = Infinity
+    ) {
+      const input = document.getElementById(inputId)
+      const previewContainer = document.querySelector(previewSelector)
+      let block = previewContainer.querySelector(`.${blockClass}`)
+      const value = input.value.trim()
+
+      if (!value) {
+        alert(`Please enter a ${label.toLowerCase()} before adding.`)
+        return
+      }
+
+      if (!block) {
+        block = document.createElement('div')
+        block.className = blockClass
+
+        const heading = document.createElement('h4')
+        heading.textContent = `${label}:`
+        block.appendChild(heading)
+
+        previewContainer.appendChild(block)
+      }
+
+      const existingItems = block.querySelectorAll(`.${blockClass}-item`)
+      if (existingItems.length >= maxItems) {
+        alert(`You can only add up to ${maxItems} ${label.toLowerCase()}.`)
+        return
+      }
+
+      const item = document.createElement('div')
+      item.className = `${blockClass}-item`
+      item.style.display = 'flex'
+      item.style.alignItems = 'center'
+      item.style.gap = '8px'
+      item.style.margin = '4px 0'
+
+      item.innerHTML = `
+      <span>${value}</span>
+      <button type="button" class="removeBtn">Remove</button>
+    `
+
+      item.querySelector('.removeBtn').addEventListener('click', () => {
+        item.remove()
+        const remaining = block.querySelectorAll(`.${blockClass}-item`)
+        if (remaining.length === 0) {
+          block.remove()
+        }
+      })
+
+      block.appendChild(item)
+      input.value = ''
+    }
+
+    function addSkills(action) {
+      if (action !== 'add') return
+      addItem('skills', '.skillPreview', 'skillPreviewBlock', 'Skills', 8)
+    }
+
+    function addLanguages(action) {
+      if (action !== 'add') return
+      addItem(
+        'languages',
+        '.languagePreview',
+        'languagePreviewBlock',
+        'Languages',
+        5
+      )
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const options = document.querySelectorAll('.options')
+      const textarea = document.querySelector('textarea')
+
+      textarea.addEventListener('input', () => {
+        textarea.style.height = '37px'
+        textarea.style.height = textarea.scrollHeight + 'px'
+      })
+
+      const cvSpans = document.querySelectorAll('.selective > span')
+      const form = document.querySelector('.cv form')
+      const iframe = document.querySelector('.cv iframe')
+      iframe.style.display = 'none'
+
+      let selectedOption = document.querySelector('.options.selected')
+      let visibleContent = document.querySelector('.content > :not(.hide)')
+      let activeCvSpan = document.querySelector('.cvSelective')
+
+      cvSpans.forEach(span => {
+        span.addEventListener('click', () => {
+          activeCvSpan?.classList.remove('cvSelective')
+          span.classList.add('cvSelective')
+
+          const isPreview = span.textContent.trim().toLowerCase() === 'preview'
+          form.style.display = isPreview ? 'none' : 'flex'
+          iframe.style.display = isPreview ? 'flex' : 'none'
+
+          activeCvSpan = span
+        })
+      })
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          selectedOption?.classList.remove('selected')
+          visibleContent?.classList.add('hide')
+
+          opt.classList.add('selected')
+          selectedOption = opt
+
+          visibleContent = document.querySelector(`.content .${opt.id}`)
+          visibleContent?.classList.remove('hide')
+        })
+      })
+
+      // ✅ Form validation on submit
+      document.querySelector('.CvForm').addEventListener('submit', e => {
+        e.preventDefault()
+
+        const name = document.getElementById('name').value.trim()
+        const compName = document
+          .querySelector('[name="compName"]')
+          .value.trim()
+        const duration = [
+          ...document.querySelectorAll('[name="duration"]')
+        ].map(i => i.value.trim())
+        const position = document
+          .querySelector('[name="position"]')
+          .value.trim()
+        const pointers = document.getElementById('pointers').value.trim()
+        const skills = document.getElementById('skills').value.trim()
+        const languages = document.getElementById('languages').value.trim()
+
+        if (!name) return alert('Name is required.')
+        if (
+          !compName ||
+          !duration[0] ||
+          !duration[1] ||
+          !position ||
+          !pointers
+        ) {
+          return alert('Please complete all Experience fields.')
+        }
+        if (!skills) return alert('Please enter at least one skill.')
+        if (!languages) return alert('Please enter at least one language.')
+
+        alert('Form submitted successfully!')
+      })
+    })
+  </script>
+</html>

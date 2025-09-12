@@ -1,20 +1,20 @@
 :root {
-    --padding: 15mm;
-    --border: 0.6mm solid #575757;
-    --commonPadding: 8mm 0mm 5mm 3mm;
-    --expPadding: 5mm 0mm 5mm 5mm;
-    --introFont: 12mm;
-    --subHeaderFont: 4.2mm;
-    --headerFont: 6mm;
-    --contentFont: 3.5mm;
-    --iconsHeight: 4mm;
-    --lato: 'lato', sans-serif;
-    --latoMedium: 'lato-medium', sans-serif;
-    --now: 'Now', sans-serif;
-    --nowBold: 'Now-bold', sans-serif;
-    --bold: 800;
-    --profilePadding: 5mm 1mm 1mm 1mm;
-    --boxOnegap: 4mm;
+  --padding: 15mm;
+  --border: 0.6mm solid #575757;
+  --commonPadding: 8mm 0mm 5mm 3mm;
+  --expPadding: 5mm 0mm 5mm 5mm;
+  --introFont: 12mm;
+  --subHeaderFont: 4.2mm;
+  --headerFont: 6mm;
+  --contentFont: 3.5mm;
+  --iconsHeight: 4mm;
+  --lato: 'lato', sans-serif;
+  --latoMedium: 'lato-medium', sans-serif;
+  --now: 'Now', sans-serif;
+  --nowBold: 'Now-bold', sans-serif;
+  --bold: 800;
+  --profilePadding: 5mm 1mm 1mm 1mm;
+  --boxOnegap: 4mm;
 }
 
 * {
@@ -187,6 +187,7 @@ body {
     box-shadow: none;
     margin: 0;
     page-break-after: always;
+    break-after: page;
     zoom: 1 !important;
     transform: scale(1);
   }

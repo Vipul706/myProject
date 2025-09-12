@@ -1,5 +1,6 @@
 
-export { getCvTemp } from './cvTemplate/cv.controller'
+export { getCvTemp } from './cvTemplate'
 export { generatePdf } from './pdf/pdf.controller'
-export { loginPage } from './loginTemplate/login.template.controller'
-export { accessController } from './login/login.controller'
+export { loginPage } from './loginTemplate'
+export { accessController } from './login'
+export { forgotPasswordController } from './forgotPassword'

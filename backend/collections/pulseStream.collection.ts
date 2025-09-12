@@ -6,10 +6,11 @@ const pulseStreamSchema = new Schema(
     originalUrl: { type: String, required: true },
     method: { type: String, required: true },
     host: { type: String, required: true },
+    region: { type: String, required: true },
     createdAt: { type: Date, default: Date.now, expires: '30d' }
   },
   {
-    collection: 'pulseStream'
+    collection: 'pulseStream',
   }
 );
 

@@ -1,25 +1,24 @@
 import type { Request, Response } from 'express'
-import { errorParser } from '../../utils/utils';
 import { emitter } from '../../utils/emiter';
 
-const loginPage = async (request: Request, reply: Response) => {
+const dashboardPage = async (request: Request, reply: Response) => {
     emitter.emit('log', {
-        msg: 'LoginPage Controller initialized',
+        msg: 'Dashboard Controller initialized',
         level: 'info'
     })
     try {
-        reply.render('login_templates/login.ejs');
+        reply.render('dashboard/dashboard.ejs');
     } catch (error: any) {
         emitter.emit('error', {
             msg: error.message,
             err: error,
             level: error.level,
             code: 500,
-            methodName: loginPage.name
+            methodName: dashboardPage.name
         })
         reply.status(500).send(error);
     }
 }
 
 
-export { loginPage }
+export { dashboardPage }

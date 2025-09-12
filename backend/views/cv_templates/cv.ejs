@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Professional CV template for Olivia Wilson, Marketing Manager. Includes experience, education, skills, and contact details."
+      content="Professional CV template for <%= data.userData.name %>. Includes experience, education, skills, and contact details."
     />
     <title>CV Template</title>
     <link rel="stylesheet" href="/css/cv.css" />
@@ -14,16 +14,19 @@
     <div class="a4-page">
       <div class="intro">
         <div class="bgSig"></div>
-        <div class="name">OLIVIA WILSON</div>
-        <div class="position">MARKETING MANAGER</div>
+        <div class="name"><%= data.userData.name %></div>
+        <div class="position">
+          <%= data.cvData?.exp?.[data.cvData.exp.length - 1].position %>
+        </div>
       </div>
+
       <div class="expBoxConatiner">
         <div class="boxTwo">
+          <!-- EDUCATION SECTION -->
           <div class="edu">
             <div class="title"><strong>E</strong>DUCATION</div>
-
-            <% if (data.education && data.education.length > 0) { %> <%
-            data.education.forEach(function(edu) { %>
+            <% if (data.cvData.education && data.cvData.education.length > 0) {
+            %> <% data.cvData.education.forEach(function(edu) { %>
             <div class="eduData">
               <div class="duration"><%= edu.duration %></div>
               <div class="name"><%= edu.name %></div>
@@ -37,11 +40,12 @@
             <% } %>
           </div>
 
+          <!-- SKILLS SECTION -->
           <div class="skills">
             <div class="title"><strong>S</strong>KILLS</div>
             <ul>
-              <% if (data.skills && data.skills.length > 0) { %> <%
-              data.skills.forEach(function(skill) { %>
+              <% if (data.cvData.skills && data.cvData.skills.length > 0) { %>
+              <% data.cvData.skills.forEach(function(skill) { %>
               <li><%= skill %></li>
               <% }); %> <% } else { %>
               <li>No skills listed</li>
@@ -49,6 +53,7 @@
             </ul>
           </div>
 
+          <!-- LANGUAGE SECTION -->
           <div class="language">
             <div class="title"><strong>L</strong>ANGUAGE</div>
             <ul>
@@ -57,10 +62,12 @@
             </ul>
           </div>
         </div>
+
+        <!-- EXPERIENCE SECTION -->
         <div class="exp">
           <div class="title"><strong>W</strong>ORK EXPERIENCE</div>
-
-          <% data.exp.forEach(function(expItem) { %>
+          <% if (data.cvData.exp && data.cvData.exp.length > 0) { %> <%
+          data.cvData.exp.forEach(function(expItem) { %>
           <div class="company">
             <div class="compDetail">
               <div class="name"><%= expItem.name %></div>
@@ -73,30 +80,31 @@
               <% }) %>
             </div>
           </div>
-          <% }) %>
+          <% }) %> <% } else { %>
+          <p>No experience available</p>
+          <% } %>
         </div>
       </div>
     </div>
-    <!-- 🔥 This button is outside the page -->
+
+    <!-- PDF Download Button -->
     <img
       id="downloadBtn"
       src="/assets/pdf.svg"
       alt="Download PDF"
-      style="cursor: pointer; position: static; z-index: 1000; height: 14mm"
+      style="cursor: pointer; z-index: 1000; height: 14mm"
     />
 
-    <!-- 🔽 Script to generate PDF -->
+    <!-- Script to trigger PDF generation -->
     <script>
       document
         .getElementById('downloadBtn')
         .addEventListener('click', async () => {
           const htmlContent = document.querySelector('.a4-page').outerHTML
 
-          const response = await fetch('pdf/generate-pdf', {
+          const response = await fetch('/pdf/generate-pdf', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ html: htmlContent })
           })
 
@@ -107,6 +115,7 @@
           link.href = url
           link.download = 'resume.pdf'
           link.click()
+
           URL.revokeObjectURL(url)
         })
     </script>

@@ -5,16 +5,17 @@ import { emitter } from "../utils/emiter";
 const { pulseStream } = models
 
 
-const routerSanity = (request: Request, response: Response, next: NextFunction): void => {
+const routerSanity = (request: Request, _response: Response, next: NextFunction): void => {
     request.validRoute = true;
     next();
 };
 
-const apiHeartBeat = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+const apiHeartBeat = async (request: Request, _response: Response, next: NextFunction): Promise<void> => {
     try {
-        emitter.emit('log',{
-            msg:`${request.method} ${(new Date()).toLocaleTimeString()} api request --->  ` + request.headers.host || request.hostname + request.baseUrl,
-            level:'info'
+        const region = Intl.DateTimeFormat().resolvedOptions().timeZone
+        emitter.emit('log', {
+            msg: `In Region: ${region} ${request.method} ${(new Date()).toLocaleTimeString()} api request --->  ` + request.headers.host || request.hostname + request.baseUrl,
+            level: 'info'
         })
         fireAndForgetPulse(request);
         next();
@@ -46,6 +47,7 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
         originalUrl: request.headers.host || request.hostname + request.originalUrl,
         url: request.originalUrl,
         host: request.host,
+        region: Intl.DateTimeFormat().resolvedOptions().timeZone,
         method: request.method,
     }).catch(err => {
         emitter.emit('error', {
@@ -61,14 +63,15 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
 }
 
 
-const globalErrorHandler = async (err: AppError, req: Request, res: Response, next: NextFunction) => {
-    emitter.emit('error', {
-        msg: err.message,
+const globalErrorHandler = async (err: AppError, _req: Request, res: Response, _next: NextFunction) => {
+    const errorObj = {
+        msg: err.message || "Server Error on GlobalErrorHandler",
         err: err,
         level: err.level,
-        code: err.statusCode,
-        methodName: err.methodName
-    })
+        code: err.statusCode || 500,
+        methodName: err.methodName || globalErrorHandler.name
+    }
+    emitter.emit('error', errorObj)
     res.status(err.statusCode).send(err);
 }
 

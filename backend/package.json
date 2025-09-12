@@ -3,12 +3,18 @@
   "module": "app.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch run app.ts",
-    "build": "tsc"
+    "dev": "bun run lint && bun --watch run app.ts",
+    "build": "tsc",
+    "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/compression": "^1.8.1"
+    "@types/compression": "^1.8.1",
+    "@types/nodemailer": "^7.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "eslint": "^9.35.0",
+    "eslint-plugin-unused-imports": "^4.2.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -25,6 +31,8 @@
     "jose": "^6.0.11",
     "moment": "^2.30.1",
     "mongoose": "^8.16.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.6",
     "puppeteer": "^24.10.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

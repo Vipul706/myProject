@@ -1,4 +1,3 @@
-import type { Request, Response } from 'express'
 import { models, Model } from 'mongoose';
 import type { login, loginErrorCode } from './types';
 import { compare } from 'bcryptjs';
@@ -6,40 +5,56 @@ import type { IUserDocument } from '../../types/model.type';
 import { createToken } from '../../utils/utils';
 const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
 
-const hLogin = async (body: login, authToken: string): Promise<{
+const hLogin = async (body: login): Promise<{
     errorCode: loginErrorCode,
     statusCode: number,
     token?: string
 }> => {
     try {
         const { pass, email } = body;
-        const userData = await UserVault.findOne({ email: email }).select('+password').populate('cv').lean();
+        let userData = await UserVault.findOne({ email }).select('+password').populate('cv');
 
         if (!userData) {
-            return {
-                errorCode: 'USER_DOES_NOT_EXIST',
-                statusCode: 404
-            };
+            const newUser = new UserVault({
+                email,
+                password: pass,
+                name: email.split('@')[0]
+            });
+            userData = await newUser.save();
         }
 
-        const check = await checkPassword(pass, userData.password); // Make async
-        if (!check) {
-            return {
-                errorCode: 'INVALID_ACCESS',
-                statusCode: 401
-            };
+        // validate password only if it’s an existing user
+        if (userData && userData.password) {
+            const check = await checkPassword(pass, userData.password);
+            if (!check) {
+                return {
+                    errorCode: 'INVALID_ACCESS',
+                    statusCode: 401
+                };
+            }
         }
 
-        const token = await createToken(userData); // Only run if password is valid
+        // ✅ Only pick safe fields for JWT payload
+        const payload = {
+            id: userData._id.toString(),
+            email: userData.email,
+            name: userData.name,
+            isRm:body.isRm
+        };
+
+        const token = await createToken(payload);
+        userData.token = token
+        await userData.save()
         return {
             errorCode: 'NO_ERROR',
-            statusCode: 200,
+            statusCode: userData.isNew ? 201 : 200,
             token
         };
     } catch (error) {
         throw error;
     }
-}
+};
+
 
 const checkPassword = (password: string, hashPassword: string) => {
     return compare(password, hashPassword)

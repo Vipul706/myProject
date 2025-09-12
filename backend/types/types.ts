@@ -40,6 +40,13 @@ interface EventsMap {
     error: (err: ErrorLogData) => void;
 }
 
+interface SendResetEmailOptions {
+  toEmail: string;
+  resetLink: string;
+  fromEmail?: string;  // Optional, default below
+  subject?: string;    // Optional, default below
+}
+
 export type {
   LogMethod,
   LogLevel,
@@ -48,5 +55,6 @@ export type {
   routeRegistration,
   ErrorLogData,
   logData,
-  EventsMap
+  EventsMap,
+  SendResetEmailOptions
 }

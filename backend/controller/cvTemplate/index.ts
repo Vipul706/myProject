@@ -1,22 +1,27 @@
-import { json, type Request, type Response } from 'express'
-import { errorGenerator, errorParser } from '../../utils/utils';
+import {  type Request, type Response } from 'express'
+import { errorGenerator } from '../../utils/utils';
 import { hCvTemplate } from './helper';
 import { emitter } from '../../utils/emiter';
 
 
 
-const getCvTemp = async (request: Request, reply: Response) => {
+const getCvTemp = async (_request: Request, reply: Response) => {
     emitter.emit('log', {
         msg: 'Cv Controller initialized',
         level: 'info'
     })
     try {
         const res = await hCvTemplate()
-        const { errorCode, code, data } = res
+        const { errorCode, code, data,userData } = res
         if (errorCode !== 'NO_ERROR') {
             throw await errorGenerator(errorCode, errorCode, code, 'error', getCvTemp.name, 'None');
         }
-        reply.render('cv_templates/cv.ejs', { data: data });
+        reply.render('cv_templates/cv.ejs', {
+            data: {
+                userData:userData,
+                cvData: data
+            }
+        });
     } catch (error: any) {
         emitter.emit('error', {
             msg: error.message,

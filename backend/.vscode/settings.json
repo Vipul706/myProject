@@ -1,0 +1,4 @@
+{
+  "typescript.reportUnusedLocals": "error",
+  "typescript.reportUnusedParameters": "error"
+}

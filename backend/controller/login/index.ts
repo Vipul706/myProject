@@ -2,6 +2,9 @@ import type { Request, Response } from 'express'
 import { hLogin } from './helper';
 import { errorGenerator } from '../../utils/utils';
 import { emitter } from '../../utils/emiter';
+import { AppError } from '../../types/express-error';
+import { env } from '../../config/envconfig';
+import type { login } from './types';
 
 const accessController = async (request: Request, reply: Response) => {
     emitter.emit('log', {
@@ -9,23 +12,24 @@ const accessController = async (request: Request, reply: Response) => {
         level: 'info'
     })
     try {
-        const authToken = request.headers['token'] as string
-        const res = await hLogin(request.body, authToken)
+        const res = await hLogin(request.body as login)
         const { errorCode, statusCode, token } = res
         if (errorCode !== 'NO_ERROR') {
             throw errorGenerator(errorCode, errorCode, statusCode, 'error', accessController.name, "None");
         }
         reply.setHeader('token', token!)
-        reply.status(statusCode).send('hello')
+        reply.status(statusCode).json({ errorCode: errorCode, statusCode: statusCode, redirectUrl: env.loginDashboardUrl })
     } catch (error: any) {
+        error = await error
+        const err = new AppError(error.stack, error.message, 500, accessController.name, 'Server Error');
         emitter.emit('error', {
-            msg: error.message,
-            err: error,
-            level: error.level,
-            code: error.statusCode,
-            methodName: error.methodName
+            msg: err.message,
+            err: err,
+            level: err.level,
+            code: err.statusCode,
+            methodName: err.methodName
         })
-        reply.status(error.code).send(error);
+        reply.status(err.statusCode).send(err);
     }
 }
 
