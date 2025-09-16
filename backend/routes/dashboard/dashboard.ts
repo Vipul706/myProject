@@ -15,9 +15,10 @@ const dashboardRoutes = async (...middlewares: RequestHandler[]) => {
             level: 'info'
         })
         return route;
-    } catch (error: any) {
-        let err = new AppError(error.stack, error.message, 500, dashboardRoutes.name, error.name)
-        throw (err)
+    } catch (e: any) {
+        const error = e as AppError;
+        const orgError = new AppError(error, error.stack, error.message, 500, dashboardRoutes.name, 'Server Error');
+        throw (orgError)
     }
 }
 

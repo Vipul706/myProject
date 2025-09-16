@@ -2,8 +2,7 @@ import { models, Model } from 'mongoose';
 import cron, { type ScheduledTask } from 'node-cron';
 import type { IUserDocument } from '../types/model.type';
 import { emitter } from '../utils/emiter';
-
-const UserVault = models['UserVault'] as Model<IUserDocument>;
+import { AppError } from '../types/express-error';
 
 // Store the cron instance so it can be stopped later
 let resetPrCronTask: ScheduledTask | null = null;
@@ -22,6 +21,19 @@ export const resetPrCounterCron = (cronTime: string) => {
     }
 
     resetPrCronTask = cron.schedule(cronTime, async () => {
+        const UserVault = models['UserVault'] as Model<IUserDocument>;
+
+        if (!UserVault) {
+            emitter.emit('error', {
+                msg: '[CRON] UserVault model is undefined!',
+                level: 'fatal',
+                methodName: 'resetPrCounterCron',
+                code: 500,
+                stack: 'error'
+            });
+            return;
+        }
+
         const now = new Date();
         const cutoffTime = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
 
@@ -40,13 +52,15 @@ export const resetPrCounterCron = (cronTime: string) => {
                 msg: `[CRON] resetPrCounterCron executed. Modified ${result.modifiedCount} users.`,
                 level: 'info'
             });
-        } catch (error: any) {
+        } catch (e: any) {
+            const error = e as AppError;
+            const orgError = new AppError(error.stack, error.message, 500, resetPrCounterCron.name, 'Server Error');
             emitter.emit('error', {
                 msg: '[CRON] resetPrCounterCron failed.',
-                err: error,
-                level: 'error',
+                level: 'fatal',
                 code: 500,
-                methodName: 'resetPrCounterCron'
+                methodName: 'resetPrCounterCron',
+                stack: orgError.stack!
             });
         }
     });

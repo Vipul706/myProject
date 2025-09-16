@@ -6,7 +6,8 @@ const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is ke
 
 const hCvTemplate = async (): Promise<{ errorCode: cvErrorCode, code: number, data?: CvData,userData:IUser }> => {
     try {
-        const populatedUser = await UserVault.findOne({ email: "testuser@gmail.com" }).populate('cv').lean();
+        const populatedUser = await UserVault.findOne({ email: "vipulsignh.1@gmail.com" }).populate('cv').lean();
+        
         if (!populatedUser || (populatedUser && !populatedUser.cv)) {
             const err = await errorGenerator("Db Error", 'USER_DATA_DOES_NOT_EXIST', 500, 'error', hCvTemplate.name, "On " + hCvTemplate.name);
             throw err

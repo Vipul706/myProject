@@ -275,6 +275,8 @@
                   'Password reset instructions have been sent to your email.'
                 )
               } else {
+                console.log(data);
+                
                 alert(
                   data.errorCode
                     ? `Due to this Error ${data.errorCode} Something went wrong. Please try again.`

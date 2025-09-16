@@ -28,7 +28,7 @@ export class AppError extends Error {
       name: this.name,
       message: this.message,
       methodName:this.methodName,
-      strack:this.stack
+      strack:this.stack,
     };
   }
 }

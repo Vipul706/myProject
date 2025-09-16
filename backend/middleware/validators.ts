@@ -10,6 +10,7 @@ const routerSanity = (request: Request, _response: Response, next: NextFunction)
     next();
 };
 
+// TODO:: Store IP address and Throw Error without Ip 
 const apiHeartBeat = async (request: Request, _response: Response, next: NextFunction): Promise<void> => {
     try {
         const region = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -39,7 +40,8 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
             err: err.stack,
             level: err.level,
             code: err.statusCode,
-            methodName: err.methodName
+            methodName: err.methodName,
+            stack: err.methodName
         })
         return err;
     }
@@ -49,14 +51,16 @@ function fireAndForgetPulse(request: Request, attempt = 1) {
         host: request.host,
         region: Intl.DateTimeFormat().resolvedOptions().timeZone,
         method: request.method,
-    }).catch(err => {
+    }).catch(e => {
+        const error = e as AppError;
+        const orgError = new AppError(error.stack, error.message, 500, fireAndForgetPulse.name, 'Server Error');
         emitter.emit('error', {
-            msg: err.message,
-            err: err,
-            level: err.level,
-            code: 500,
-            methodName: fireAndForgetPulse.name
-        })
+            msg: orgError.message,
+            stack: orgError.stack!,
+            level: orgError.level,
+            code: error.statusCode,
+            methodName: error.methodName
+        });
         // Retry with delay
         setTimeout(() => fireAndForgetPulse(request, attempt + 1), 200 * attempt); // Exponential backoff
     });
@@ -69,7 +73,8 @@ const globalErrorHandler = async (err: AppError, _req: Request, res: Response, _
         err: err,
         level: err.level,
         code: err.statusCode || 500,
-        methodName: err.methodName || globalErrorHandler.name
+        methodName: err.methodName || globalErrorHandler.name,
+        stack:err.stack!
     }
     emitter.emit('error', errorObj)
     res.status(err.statusCode).send(err);

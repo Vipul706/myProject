@@ -3,7 +3,8 @@ import { logger } from "./logger";
 import type { EventsMap } from "../types/types";
 import { env } from "../config/envconfig";
 import { logListener, errorListener } from "./eventListerners";
-import { registerCrons, stopCrons } from "../crons";
+import { stopCrons } from "../crons";
+import { AppError } from "../types/express-error";
 
 class TypedEmitter extends EventEmitter {
     override on<K extends keyof EventsMap>(event: K, listener: EventsMap[K]): this {
@@ -39,16 +40,18 @@ const centralLoggingEmitter = async () => {
             logger.info('🎯 Centeral Logger Initialize')
             toggleEmitter('on');
         }
-        registerCrons()
-    } catch (error: any) {
-        const err = await errorListener({
-            err: error,
-            level: 'error',
-            code: 500,
-            methodName: centralLoggingEmitter.name,
-            msg: error.message
+    } catch (e: any) {
+        const error = e as AppError;
+        const orgError = new AppError(error.stack, error.message, 500, centralLoggingEmitter.name, 'Server Error');
+        emitter.emit('error', {
+            msg: orgError.message,
+            stack: orgError.stack!,
+            level: orgError.level,
+            code: error.statusCode,
+            methodName: error.methodName
         });
-        throw err;
+
+        throw orgError;
     }
 };
 

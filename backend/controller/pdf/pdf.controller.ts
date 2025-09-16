@@ -2,12 +2,13 @@ import type { Request, Response } from "express";
 import puppeteer from "puppeteer";
 import { env } from "../../config/envconfig";
 import { emitter } from "../../utils/emiter";
+import { AppError } from "../../types/express-error";
 
 const port = env.port;
 
-const generatePdf = async (req: Request, res: Response) => {
+const generatePdf = async (request: Request, reply: Response) => {
   try {
-    const { html } = req.body;
+    const { html } = request.body as { html: string };;
 
     const fullHtml = `
       <!DOCTYPE html>
@@ -37,21 +38,23 @@ const generatePdf = async (req: Request, res: Response) => {
 
     await browser.close();
 
-    res.set({
+    reply.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=resume.pdf',
     });
 
-    res.send(pdfBuffer);
-  } catch (error: any) {
+    reply.send(pdfBuffer);
+  } catch (e: any) {
+    const error = e as AppError;
+    const orgError = new AppError(error.stack, error.message, 500, generatePdf.name, 'Server Error');
     emitter.emit('error', {
-      msg: error.message,
-      err: error,
-      level: error.level,
-      code: 500,
-      methodName: generatePdf.name
+      msg: orgError.message,
+      stack: orgError.stack!,
+      level: orgError.level,
+      code: error.statusCode,
+      methodName: error.methodName
     });
-    res.status(500).send(error);
+    reply.status(500).send({ errorCode: orgError.message, status: orgError.statusCode, error: orgError });
   }
 };
 

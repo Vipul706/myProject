@@ -34,7 +34,7 @@ export class Logger {
         const formattedMessage = `[${time}] [${level.toUpperCase()}] ${message}`;
 
         for (const transport of this.transports) {
-            transport.log(level, formattedMessage, meta);
+            transport.log(formattedMessage, meta, level);
         }
     }
 
@@ -54,7 +54,7 @@ const createLogger = (): Logger => {
     return logger;
 };
 const ConsoleTransport: LogTransport = {
-    log(level: LogLevel, message: string, meta: any[]) {
+    log(message: string, meta: any[]) {
         console.log(message, ...meta);
     }
 };

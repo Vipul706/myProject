@@ -5,8 +5,8 @@ import { emitter } from "../utils/emiter";
 const connection = mongoose
 
 const options = {
-    user: env.db_user,
-    pass: env.db_pass,
+    user: env.db_user as string,
+    pass: env.db_pass as string,
     maxPoolSize: parseInt(env.db_max_pool!),
     minPoolSize: parseInt(env.db_min_pool!),
     connectTimeoutMS: 10000,
@@ -14,7 +14,7 @@ const options = {
     serverSelectionTimeoutMS: 5000,
     w: 'majority' as const,
     wtimeoutMS: 2500,
-    authSource: env.db_pass!,
+    authSource: env.db_pass! as string,
 };
 
 async function connectToDatabase() {

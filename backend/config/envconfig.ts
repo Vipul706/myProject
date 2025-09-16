@@ -1,15 +1,17 @@
-
 import { AppError } from '../types/express-error';
+import type { EnvSchemaType } from '../types/types';
 import { envSchema } from './env.validation';
 
-// Step 2: Validate process.env 
+// ✅ Validate and type the result
 const { error, value } = envSchema.validate(process.env, {
-  abortEarly: true, // show all errors at once
+  abortEarly: true,
   allowUnknown: true,
   stripUnknown: false,
-});
+}) as {
+  error?: Error;
+  value: EnvSchemaType;
+};
 
-// Step 3: If validation fails, throw AppError
 if (error) {
   const err = new AppError(
     'On Env',
@@ -22,7 +24,7 @@ if (error) {
   throw err;
 }
 
-// Step 4: Safely extract env values
+// ✅ Now no unsafe access
 const env = {
   port: value.PORT,
   pro_env: value.PROJECT_ENV,
@@ -35,7 +37,9 @@ const env = {
   db_name: value.DB_NAME,
   log_level: value.LOG_LEVEL,
   JWTKEY: value.JWTKEY,
-  loginDashboardUrl: value.loginDashboardUrl
+  loginDashboardUrl: value.loginDashboardUrl,
+  defaultEmail: value.defaultEmail,
+  email_pass: value.email_pass
 };
 
 export { env };

@@ -13,7 +13,9 @@ const envSchema = Joi.object({
   DB_NAME: Joi.string().required(),
   JWTKEY: Joi.string().required(),
   LOG_LEVEL: Joi.string().valid( 'fatal' , 'error' , 'warn' , 'info' , 'debug' , 'trace').required(),
-  loginDashboardUrl:Joi.string().required()
+  loginDashboardUrl:Joi.string().required(),
+  defaultEmail:Joi.string().required(),
+  email_pass:Joi.string().required()
 }).unknown(); // allow other env vars to pass through
 
 export {

@@ -11,23 +11,23 @@ const forgotPasswordController = async (request: Request, reply: Response) => {
         level: 'info'
     })
     try {
-        const res = await hForgotPassword(request.body as forgotPassword)
+        const res = await hForgotPassword(request, request.body as forgotPassword)
         const { errorCode, statusCode } = res
         if (errorCode !== 'NO_ERROR') {
-            throw errorGenerator(errorCode, errorCode, statusCode, 'error', forgotPasswordController.name, "None");
+            throw await errorGenerator(errorCode, errorCode, statusCode, 'error', forgotPasswordController.name, "None");
         }
         reply.status(statusCode).json({ errorCode: errorCode, statusCode: statusCode })
-    } catch (error: any) {
-        error = await error
-        const err = new AppError(error.stack, error.message, 500, forgotPasswordController.name, 'Server Error');
+    } catch (e: any) {
+        const error = e as AppError;
+        const orgError = new AppError(error.stack, error.message, 500, forgotPasswordController.name,error.message?error.message: 'Server Error');
         emitter.emit('error', {
-            msg: err.message,
-            err: err,
-            level: err.level,
-            code: err.statusCode,
-            methodName: err.methodName
-        })
-        reply.status(err.statusCode).send(err);
+            msg: orgError.message,
+            stack: orgError.stack!,
+            level: orgError.level,
+            code: error.statusCode,
+            methodName: error.methodName
+        });
+        reply.status(500).send({errorCode:orgError.message,status:orgError.statusCode,error:orgError});
     }
 }
 

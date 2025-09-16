@@ -13,7 +13,15 @@ const pdfGeneration = async (...middlewares: RequestHandler[]) => {
         })
         return route;
     } catch (error: any) {
-        let err = new AppError(error.stack, error.message, 500, pdfGeneration.name, error.name)
+        const errObj = error as Error;
+        const err = new AppError(
+            errObj,
+            errObj.stack ?? "No stack",
+            errObj.message ?? "Unknown error",
+            500,
+            pdfGeneration.name,
+            errObj.name ?? "UnknownError"
+        );
         throw (err)
     }
 }

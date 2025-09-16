@@ -1,16 +1,16 @@
 import { type Request, Router, type NextFunction, type Response } from "express";
 type LogTransport = {
-  log: (level: LogLevel, message: string, meta: any[]) => void;
+  log: (message: string, meta: any[], level?: LogLevel,) => void;
 };
 type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
 type LogMethod = (message: string, ...meta: any[]) => void;
 type ParsedError = {
   name: string;
   message: string;
-  method:string;
+  method: string;
   stack: string;
   level: LogLevel,
-  code:number
+  code: number
 };
 
 
@@ -24,27 +24,44 @@ type routeRegistration = {
 }[];
 
 interface ErrorLogData {
-    msg: string,
-    err?: any,
-    level: LogLevel,
-    code: number,
-    methodName: string
+  msg: string,
+  err?: any,
+  stack: string
+  level: LogLevel,
+  code: number,
+  methodName: string
 }
 interface logData {
- msg:string,
- level:LogLevel
+  msg: string,
+  level: LogLevel
 }
 
 interface EventsMap {
-    log: (data: logData) => void;
-    error: (err: ErrorLogData) => void;
+  log: (data: logData) => void;
+  error: (err: ErrorLogData) => void;
 }
 
 interface SendResetEmailOptions {
   toEmail: string;
-  resetLink: string;
-  fromEmail?: string;  // Optional, default below
   subject?: string;    // Optional, default below
+  html:string
+}
+// types/env.d.ts or next to envconfig.ts
+interface EnvSchemaType {
+  PORT: string;
+  PROJECT_ENV: string;
+  API_BASE_PATH: string;
+  USER: string;
+  PASS: string;
+  MAXPOOLSIZE: string;
+  MINPOOLSIZE: string;
+  DB_URL: string;
+  DB_NAME: string;
+  LOG_LEVEL: string;
+  JWTKEY: string;
+  loginDashboardUrl: string;
+  defaultEmail: string;
+  email_pass: string;
 }
 
 export type {
@@ -56,5 +73,6 @@ export type {
   ErrorLogData,
   logData,
   EventsMap,
-  SendResetEmailOptions
+  SendResetEmailOptions,
+  EnvSchemaType
 }

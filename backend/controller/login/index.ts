@@ -19,17 +19,17 @@ const accessController = async (request: Request, reply: Response) => {
         }
         reply.setHeader('token', token!)
         reply.status(statusCode).json({ errorCode: errorCode, statusCode: statusCode, redirectUrl: env.loginDashboardUrl })
-    } catch (error: any) {
-        error = await error
-        const err = new AppError(error.stack, error.message, 500, accessController.name, 'Server Error');
+    } catch (e: any) {
+        const error = e as AppError;
+        const orgError = new AppError(error.stack, error.message, 500, accessController.name, 'Server Error');
         emitter.emit('error', {
-            msg: err.message,
-            err: err,
-            level: err.level,
-            code: err.statusCode,
-            methodName: err.methodName
-        })
-        reply.status(err.statusCode).send(err);
+            msg: orgError.message,
+            stack: orgError.stack!,
+            level: orgError.level,
+            code: error.statusCode,
+            methodName: error.methodName
+        });
+         reply.status(500).send({errorCode:orgError.message,status:orgError.statusCode,error:orgError});
     }
 }
 
