@@ -1,3 +1,5 @@
+
+<!-- TODO: ADD PREVIEW SCREEN AND ADD ID CONTROL PANNEL AND MAKE THE SITE MOBILE VERSION AS WELL-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -28,6 +30,7 @@
           </div>
         </div>
       </div>
+
       <div class="content">
         <div class="cv">
           <div class="selective">
@@ -69,7 +72,7 @@
               </div>
               <div class="exp flex-wrapbox" style="gap: 3px">
                 <div class="radioButtons">
-                  <span>Pointer 1</span>
+                  <span>Pointer Type</span>
                   <div class="radioButton">
                     <input type="radio" name="pointerType" id="para" checked />
                     <label for="para">Paragraph</label>
@@ -134,218 +137,240 @@
         <div class="Scrapper hide">Scrapper</div>
       </div>
     </div>
-  </body>
 
-  <script>
-    function addExp(action) {
-      if (action !== 'add') return
-
-      const compName = document.querySelector('[name="compName"]')
-      const durationInputs = document.querySelectorAll('[name="duration"]')
-      const position = document.querySelector('[name="position"]')
-      const pointerText = document.querySelector('#pointers')
-      const paraRadio = document.querySelector('#para')
-      const previewContainer = document.querySelector('.expPreview')
-
-      const start = durationInputs[0]?.value.trim()
-      const end = durationInputs[1]?.value.trim()
-
-      if (
-        !compName.value.trim() ||
-        !start ||
-        !end ||
-        !position.value.trim() ||
-        !pointerText.value.trim()
-      ) {
-        alert('Please fill in all experience fields before adding.')
-        return
-      }
-
-      const expDiv = document.createElement('div')
-      expDiv.className = 'expPreviewBlock'
-
-      expDiv.innerHTML = `
-      <div style="display:flex;flex-direction: row;gap: 5px;">
-        <h4>Company Name: </h4> <p>${compName.value}</p>
-      </div>
-      <p><strong>Duration:</strong> ${start} - ${end}</p>
-      <p><strong>Position:</strong> ${position.value}</p>
-      <p><strong>Pointers:</strong></p>
-      ${
-        paraRadio.checked
-          ? `<p>${pointerText.value}</p>`
-          : `<ul>${pointerText.value
-              .split('\\n')
-              .map(line => `<li>${line}</li>`)
-              .join('')}</ul>`
-      }
-      <button type="button" class="removeBtn">Remove</button>
-    `
-
-      expDiv.querySelector('.removeBtn').addEventListener('click', () => {
-        expDiv.remove()
-      })
-
-      previewContainer.appendChild(expDiv)
-
-      compName.value = ''
-      durationInputs.forEach(input => (input.value = ''))
-      position.value = ''
-      pointerText.value = ''
-      paraRadio.checked = true
-    }
-
-    function addItem(
-      inputId,
-      previewSelector,
-      blockClass,
-      label,
-      maxItems = Infinity
-    ) {
-      const input = document.getElementById(inputId)
-      const previewContainer = document.querySelector(previewSelector)
-      let block = previewContainer.querySelector(`.${blockClass}`)
-      const value = input.value.trim()
-
-      if (!value) {
-        alert(`Please enter a ${label.toLowerCase()} before adding.`)
-        return
-      }
-
-      if (!block) {
-        block = document.createElement('div')
-        block.className = blockClass
-
-        const heading = document.createElement('h4')
-        heading.textContent = `${label}:`
-        block.appendChild(heading)
-
-        previewContainer.appendChild(block)
-      }
-
-      const existingItems = block.querySelectorAll(`.${blockClass}-item`)
-      if (existingItems.length >= maxItems) {
-        alert(`You can only add up to ${maxItems} ${label.toLowerCase()}.`)
-        return
-      }
-
-      const item = document.createElement('div')
-      item.className = `${blockClass}-item`
-      item.style.display = 'flex'
-      item.style.alignItems = 'center'
-      item.style.gap = '8px'
-      item.style.margin = '4px 0'
-
-      item.innerHTML = `
-      <span>${value}</span>
-      <button type="button" class="removeBtn">Remove</button>
-    `
-
-      item.querySelector('.removeBtn').addEventListener('click', () => {
-        item.remove()
-        const remaining = block.querySelectorAll(`.${blockClass}-item`)
-        if (remaining.length === 0) {
-          block.remove()
+    <script>
+      // 🔒 Disable back button
+      function disableBackButton() {
+        history.pushState(null, '', location.href)
+        window.onpopstate = () => {
+          history.replaceState(null, '', location.href)
+          window.location.replace('/login')
         }
-      })
+      }
+      disableBackButton()
 
-      block.appendChild(item)
-      input.value = ''
-    }
+      // ---- HELPER FUNCTIONS ----
+      function addExp(action) {
+        if (action !== 'add') return;
 
-    function addSkills(action) {
-      if (action !== 'add') return
-      addItem('skills', '.skillPreview', 'skillPreviewBlock', 'Skills', 8)
-    }
+        const compName = document.querySelector('[name="compName"]');
+        const durationInputs = document.querySelectorAll('[name="duration"]');
+        const position = document.querySelector('[name="position"]');
+        const pointerText = document.querySelector('#pointers');
+        const paraRadio = document.querySelector('#para');
+        const bulletsRadio = document.querySelector('#bullets');
+        const previewContainer = document.querySelector('.expPreview');
 
-    function addLanguages(action) {
-      if (action !== 'add') return
-      addItem(
-        'languages',
-        '.languagePreview',
-        'languagePreviewBlock',
-        'Languages',
-        5
-      )
-    }
+        const start = durationInputs[0]?.value.trim();
+        const end = durationInputs[1]?.value.trim();
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const options = document.querySelectorAll('.options')
-      const textarea = document.querySelector('textarea')
-
-      textarea.addEventListener('input', () => {
-        textarea.style.height = '37px'
-        textarea.style.height = textarea.scrollHeight + 'px'
-      })
-
-      const cvSpans = document.querySelectorAll('.selective > span')
-      const form = document.querySelector('.cv form')
-      const iframe = document.querySelector('.cv iframe')
-      iframe.style.display = 'none'
-
-      let selectedOption = document.querySelector('.options.selected')
-      let visibleContent = document.querySelector('.content > :not(.hide)')
-      let activeCvSpan = document.querySelector('.cvSelective')
-
-      cvSpans.forEach(span => {
-        span.addEventListener('click', () => {
-          activeCvSpan?.classList.remove('cvSelective')
-          span.classList.add('cvSelective')
-
-          const isPreview = span.textContent.trim().toLowerCase() === 'preview'
-          form.style.display = isPreview ? 'none' : 'flex'
-          iframe.style.display = isPreview ? 'flex' : 'none'
-
-          activeCvSpan = span
-        })
-      })
-
-      options.forEach(opt => {
-        opt.addEventListener('click', () => {
-          selectedOption?.classList.remove('selected')
-          visibleContent?.classList.add('hide')
-
-          opt.classList.add('selected')
-          selectedOption = opt
-
-          visibleContent = document.querySelector(`.content .${opt.id}`)
-          visibleContent?.classList.remove('hide')
-        })
-      })
-
-      // ✅ Form validation on submit
-      document.querySelector('.CvForm').addEventListener('submit', e => {
-        e.preventDefault()
-
-        const name = document.getElementById('name').value.trim()
-        const compName = document
-          .querySelector('[name="compName"]')
-          .value.trim()
-        const duration = [
-          ...document.querySelectorAll('[name="duration"]')
-        ].map(i => i.value.trim())
-        const position = document
-          .querySelector('[name="position"]')
-          .value.trim()
-        const pointers = document.getElementById('pointers').value.trim()
-        const skills = document.getElementById('skills').value.trim()
-        const languages = document.getElementById('languages').value.trim()
-
-        if (!name) return alert('Name is required.')
         if (
-          !compName ||
-          !duration[0] ||
-          !duration[1] ||
-          !position ||
-          !pointers
+          !compName.value.trim() ||
+          !start ||
+          !end ||
+          !position.value.trim() ||
+          !pointerText.value.trim()
         ) {
-          return alert('Please complete all Experience fields.')
+          alert('Please fill in all experience fields before adding.');
+          return;
         }
-        if (!skills) return alert('Please enter at least one skill.')
-        if (!languages) return alert('Please enter at least one language.')
 
-        alert('Form submitted successfully!')
-      })
-    })
-  </script>
+        const expDiv = document.createElement('div');
+        expDiv.className = 'expPreviewBlock';
+
+        // ✅ Handle pointers
+        let pointerHTML = '';
+        let pointerData = [];
+
+        if (paraRadio.checked) {
+          pointerHTML = `<p>${pointerText.value}</p>`;
+          pointerData = [pointerText.value.trim()];
+        } else if (bulletsRadio.checked) {
+          pointerData = pointerText.value
+            .split(/[,\\n]/)
+            .map(line => line.trim())
+            .filter(line => line !== '');
+          pointerHTML = `<ul>${pointerData.map(line => `<li>${line}</li>`).join('')}</ul>`;
+        }
+
+        expDiv.innerHTML = `
+          <div style="display:flex;flex-direction: row;gap: 5px;">
+            <h4>Company Name: </h4> <p>${compName.value}</p>
+          </div>
+          <p><strong>Duration:</strong> ${start} - ${end}</p>
+          <p><strong>Position:</strong> ${position.value}</p>
+          <p><strong>Pointers:</strong></p>
+          ${pointerHTML}
+          <button type="button" class="removeBtn">Remove</button>
+        `;
+
+        expDiv.dataset.pointerArray = JSON.stringify(pointerData);
+
+        expDiv.querySelector('.removeBtn').addEventListener('click', () => expDiv.remove());
+
+        previewContainer.appendChild(expDiv);
+
+        // Clear inputs
+        compName.value = '';
+        durationInputs.forEach(input => (input.value = ''));
+        position.value = '';
+        pointerText.value = '';
+        paraRadio.checked = true;
+      }
+
+      function addItem(inputId, previewSelector, blockClass, label, maxItems = Infinity) {
+        const input = document.getElementById(inputId);
+        const previewContainer = document.querySelector(previewSelector);
+        let block = previewContainer.querySelector(`.${blockClass}`);
+        const value = input.value.trim();
+        if (!value) {
+          alert(`Please enter a ${label.toLowerCase()} before adding.`);
+          return;
+        }
+        if (!block) {
+          block = document.createElement('div');
+          block.className = blockClass;
+          const heading = document.createElement('h4');
+          heading.textContent = `${label}:`;
+          block.appendChild(heading);
+          previewContainer.appendChild(block);
+        }
+        const existingItems = block.querySelectorAll(`.${blockClass}-item`);
+        if (existingItems.length >= maxItems) {
+          alert(`You can only add up to ${maxItems} ${label.toLowerCase()}.`);
+          return;
+        }
+        const item = document.createElement('div');
+        item.className = `${blockClass}-item`;
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.gap = '8px';
+        item.style.margin = '4px 0';
+        item.innerHTML = `<span>${value}</span><button type="button" class="removeBtn">Remove</button>`;
+        item.querySelector('.removeBtn').addEventListener('click', () => {
+          item.remove();
+          const remaining = block.querySelectorAll(`.${blockClass}-item`);
+          if (remaining.length === 0) block.remove();
+        });
+        block.appendChild(item);
+        input.value = '';
+      }
+
+      function addSkills(action) {
+        if (action !== 'add') return;
+        addItem('skills', '.skillPreview', 'skillPreviewBlock', 'Skills', 8);
+      }
+
+      function addLanguages(action) {
+        if (action !== 'add') return;
+        addItem('languages', '.languagePreview', 'languagePreviewBlock', 'Languages', 5);
+      }
+
+      // ---- MAIN LOGIC ----
+      document.addEventListener('DOMContentLoaded', () => {
+        const options = document.querySelectorAll('.options');
+        const textarea = document.querySelector('textarea');
+
+        textarea.addEventListener('input', () => {
+          textarea.style.height = '37px';
+          textarea.style.height = textarea.scrollHeight + 'px';
+        });
+
+        const cvSpans = document.querySelectorAll('.selective > span');
+        const form = document.querySelector('.cv form');
+        const iframe = document.querySelector('.cv iframe');
+        iframe.style.display = 'none';
+        let selectedOption = document.querySelector('.options.selected');
+        let visibleContent = document.querySelector('.content > :not(.hide)');
+        let activeCvSpan = document.querySelector('.cvSelective');
+
+        cvSpans.forEach(span => {
+          span.addEventListener('click', () => {
+            activeCvSpan?.classList.remove('cvSelective');
+            span.classList.add('cvSelective');
+            const isPreview = span.textContent.trim().toLowerCase() === 'preview';
+            form.style.display = isPreview ? 'none' : 'flex';
+            iframe.style.display = isPreview ? 'flex' : 'none';
+            activeCvSpan = span;
+          });
+        });
+
+        options.forEach(opt => {
+          opt.addEventListener('click', () => {
+            selectedOption?.classList.remove('selected');
+            visibleContent?.classList.add('hide');
+            opt.classList.add('selected');
+            selectedOption = opt;
+            visibleContent = document.querySelector(`.content .${opt.id}`);
+            visibleContent?.classList.remove('hide');
+          });
+        });
+
+        form.addEventListener('submit', async e => {
+          e.preventDefault();
+
+          const name = document.getElementById('name').value.trim();
+          if (!name) return alert('Name is required.');
+
+          const experiences = [...document.querySelectorAll('.expPreview .expPreviewBlock')].map(exp => {
+            const durationText =
+              exp.querySelector('p strong')?.parentNode.textContent.replace('Duration:', '').trim() || '';
+            const durationArray = durationText.includes('-')
+              ? durationText.split('-').map(d => d.trim())
+              : [durationText];
+
+            const pointers = exp.dataset.pointerArray
+              ? JSON.parse(exp.dataset.pointerArray)
+              : [];
+
+            return {
+              company: exp.querySelector('h4 + p')?.textContent || '',
+              duration: durationArray,
+              position:
+                exp.querySelector('p:nth-of-type(2)')?.textContent.replace('Position:', '').trim() || '',
+              pointers,
+            };
+          });
+
+          const skills = [...document.querySelectorAll('.skillPreviewBlock-item')].map(i =>
+            i.querySelector('span').textContent
+          );
+          const languages = [...document.querySelectorAll('.languagePreviewBlock-item')].map(i =>
+            i.querySelector('span').textContent
+          );
+
+          if (!experiences.length) return alert('Please add at least one experience.');
+          if (!skills.length) return alert('Please add at least one skill.');
+          if (!languages.length) return alert('Please add at least one language.');
+
+          try {
+            const response = await fetch('/dashboard/addCvdata', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                token: sessionStorage.getItem('token')
+              },
+              body: JSON.stringify({ name, experiences, skills, languages })
+            });
+
+            if (!response.ok) throw new Error('Failed to submit CV.');
+
+            const result = await response.json();
+            alert('Form submitted successfully!');
+            console.log('API Response:', result);
+          } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form. Please try again.');
+          }
+        });
+
+        // ✅ Secure Sign Out
+        document.getElementById('signOut').addEventListener('click', async () => {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace('/login');
+        });
+      });
+    </script>
+  </body>
 </html>

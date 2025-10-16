@@ -1,8 +1,7 @@
-import { errorGenerator } from '../../utils/utils';
-import { Model, models } from 'mongoose';
+import { errorGenerator, getMongooseModel } from '../../utils/utils';
 import type { CvData, cvErrorCode } from './types';
-import type { IUser, IUserDocument } from '../../types/model.type';
-const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
+import type { IUser } from '../../types/model.type';
+const UserVault = getMongooseModel('UserVault')  // ✅ THIS is key
 
 const hCvTemplate = async (): Promise<{ errorCode: cvErrorCode, code: number, data?: CvData,userData:IUser }> => {
     try {

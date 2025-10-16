@@ -2,12 +2,26 @@ import type { NextFunction, Request, Response } from "express";
 import { models } from "../collections";
 import { AppError } from "../types/express-error";
 import { emitter } from "../utils/emiter";
+import { verifyToken } from "../utils/utils";
 const { pulseStream } = models
+interface tokenData {
+    id: string,
+    email: string,
+    name: string,
+    iat: string,
+    exp: string
+}
 
-
-const routerSanity = (request: Request, _response: Response, next: NextFunction): void => {
-    request.validRoute = true;
-    next();
+const routerSanity = async (request: Request, reply: Response, next: NextFunction): Promise<void> => {
+    const token = request.headers['token'] as string;
+    const tokenCheck = await verifyToken(token) as tokenData;
+    if (tokenCheck) {
+        request.validRoute = true;
+        request.email = tokenCheck.email
+        next();
+        return;
+    }
+    reply.status(401).json({ message: "Unauthorized access" })
 };
 
 // TODO:: Store IP address and Throw Error without Ip 
@@ -74,7 +88,7 @@ const globalErrorHandler = async (err: AppError, _req: Request, res: Response, _
         level: err.level,
         code: err.statusCode || 500,
         methodName: err.methodName || globalErrorHandler.name,
-        stack:err.stack!
+        stack: err.stack!
     }
     emitter.emit('error', errorObj)
     res.status(err.statusCode).send(err);

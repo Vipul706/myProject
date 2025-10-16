@@ -78,42 +78,42 @@ async function verifyToken(token: string): Promise<JWTPayload | unknown> {
 }
 
 function generatePassword(length: number, specialCharRange: [number, number]): string {
-  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const digits = '0123456789';
-  const specialChars = '!@#$%^&*()'; // Only safe special characters
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+    const specialChars = '!@#$%^&*()'; // Only safe special characters
 
-  const allNonSpecial = lowercase + uppercase + digits;
+    const allNonSpecial = lowercase + uppercase + digits;
 
-  if (length < specialCharRange[1]) {
-    throw new Error('Password length must be greater than special character end range.');
-  }
+    if (length < specialCharRange[1]) {
+        throw new Error('Password length must be greater than special character end range.');
+    }
 
-  // Step 1: Initialize password with random non-special characters
-  const result: string[] = [];
-  for (let i = 0; i < length; i++) {
-    const char = allNonSpecial[Math.floor(Math.random() * allNonSpecial.length)];
-    result.push(char);
-  }
+    // Step 1: Initialize password with random non-special characters
+    const result: string[] = [];
+    for (let i = 0; i < length; i++) {
+        const char = allNonSpecial[Math.floor(Math.random() * allNonSpecial.length)];
+        result.push(char);
+    }
 
-  // Step 2: Decide how many special characters to insert (between 3 and 6)
-  const numSpecials = Math.min(Math.floor(Math.random() * 4) + 3, specialCharRange[1] - specialCharRange[0] + 1);
+    // Step 2: Decide how many special characters to insert (between 3 and 6)
+    const numSpecials = Math.min(Math.floor(Math.random() * 4) + 3, specialCharRange[1] - specialCharRange[0] + 1);
 
-  // Step 3: Generate unique positions within the range to place special characters
-  const [start, end] = specialCharRange;
-  const positions = new Set<number>();
-  while (positions.size < numSpecials) {
-    const pos = Math.floor(Math.random() * (end - start + 1)) + start;
-    positions.add(pos);
-  }
+    // Step 3: Generate unique positions within the range to place special characters
+    const [start, end] = specialCharRange;
+    const positions = new Set<number>();
+    while (positions.size < numSpecials) {
+        const pos = Math.floor(Math.random() * (end - start + 1)) + start;
+        positions.add(pos);
+    }
 
-  // Step 4: Replace characters at those positions with random special characters
-  for (const pos of positions) {
-    const specialChar = specialChars[Math.floor(Math.random() * specialChars.length)];
-    result[pos] = specialChar;
-  }
+    // Step 4: Replace characters at those positions with random special characters
+    for (const pos of positions) {
+        const specialChar = specialChars[Math.floor(Math.random() * specialChars.length)];
+        result[pos] = specialChar;
+    }
 
-  return result.join('');
+    return result.join('');
 }
 
 
@@ -125,7 +125,7 @@ const DeepResume = models['DeepResume'] as Model<IUserDocument>;
 async function seedUserWithResume() {
     const userData = {
         name: "vipul singh",
-        email: "vipulsignh.1@gmail.com", // Must match allowedDomains in your schema
+        email: "a@gmail.com", // Must match allowedDomains in your schema
         password: "123456" // Will be hashed via pre-save hook
     };
 
@@ -281,7 +281,24 @@ async function sendEmail({
     }
 }
 
+interface ModelMap {
+    UserVault: IUserDocument;
+    DeepResume: IUserDocument;
+    blackBox:IUserDocument,
+    pulseStream:IUserDocument
+}
+
+const getMongooseModel = <K extends keyof ModelMap>(name: K): Model<ModelMap[K]> => {
+  const model = models[name];
+  if (!model) {
+    throw new Error(`Model ${name} not found`);
+  }
+  return model as unknown as Model<ModelMap[K]>; // ✅ safe cast
+};
+
+
 export {
+    getMongooseModel,
     errorParser,
     errorGenerator,
     createToken,

@@ -4,5 +4,6 @@ declare module 'express-serve-static-core' {
   interface Request {
     validRoute: boolean;
     token: string
+    email:string
   }
 }

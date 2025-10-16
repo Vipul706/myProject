@@ -1,13 +1,11 @@
-import { models, Model } from "mongoose";
-import type { IUserDocument } from "../../types/model.type";
 import type { forgotPassword, forgotPasswordErrorCode } from "./types"
 import { AppError } from "../../types/express-error";
 import type { Request } from 'express'
-import { createToken, sendEmail } from "../../utils/utils";
+import { createToken, getMongooseModel, sendEmail } from "../../utils/utils";
 import type { SendResetEmailOptions } from "../../types/types";
 import { emitter } from "../../utils/emiter";
 import { env } from "../../config/envconfig";
-const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
+const UserVault = getMongooseModel('UserVault')  // ✅ THIS is key
 
 
 async function generateResetPasswordHtml(resetLink: string, email: string): Promise<string> {

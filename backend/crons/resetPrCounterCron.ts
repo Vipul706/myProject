@@ -1,8 +1,7 @@
-import { models, Model } from 'mongoose';
 import cron, { type ScheduledTask } from 'node-cron';
-import type { IUserDocument } from '../types/model.type';
 import { emitter } from '../utils/emiter';
 import { AppError } from '../types/express-error';
+import { getMongooseModel } from '../utils/utils';
 
 // Store the cron instance so it can be stopped later
 let resetPrCronTask: ScheduledTask | null = null;
@@ -21,7 +20,7 @@ export const resetPrCounterCron = (cronTime: string) => {
     }
 
     resetPrCronTask = cron.schedule(cronTime, async () => {
-        const UserVault = models['UserVault'] as Model<IUserDocument>;
+        const UserVault = getMongooseModel('UserVault')  // ✅ THIS is key
 
         if (!UserVault) {
             emitter.emit('error', {

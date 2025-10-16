@@ -4,7 +4,17 @@ const experienceSchema = new Schema({
     name: { type: String, required: true },
     duration: { type: String, required: true },
     position: { type: String, required: true },
-    pointers: [{ type: String }]
+    // ✅ Allow pointers to be either string or array of strings
+    pointers: {
+        type: Schema.Types.Mixed,
+        validate: {
+            validator: function(value: any) {
+                return typeof value === 'string' || 
+                       (Array.isArray(value) && value.every(v => typeof v === 'string'));
+            },
+            message: 'Pointers must be a string or an array of strings'
+        }
+    }
 });
 
 const educationSchema = new Schema({
@@ -28,7 +38,6 @@ const cvDataSchema = new Schema({
     timestamps: true,
     collection: "DeepResume"
 });
-
 
 export const modelName = "DeepResume";
 export const schema = cvDataSchema;

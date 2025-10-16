@@ -1,9 +1,7 @@
-import { models, Model } from 'mongoose';
 import type { login, loginErrorCode } from './types';
 import { compare } from 'bcryptjs';
-import type { IUserDocument } from '../../types/model.type';
-import { createToken } from '../../utils/utils';
-const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
+import { createToken, getMongooseModel } from '../../utils/utils';
+const UserVault = getMongooseModel('UserVault')  // ✅ THIS is key
 
 const hLogin = async (body: login): Promise<{
     errorCode: loginErrorCode,

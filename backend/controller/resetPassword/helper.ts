@@ -1,12 +1,10 @@
-import { models, Model } from "mongoose";
 import { AppError } from "../../types/express-error";
-import type { IUserDocument } from "../../types/model.type";
 import { emitter } from "../../utils/emiter";
-import { generatePassword, sendEmail, verifyToken } from "../../utils/utils";
+import { generatePassword, getMongooseModel, sendEmail, verifyToken } from "../../utils/utils";
 import { hForgotPassword } from "../forgotPassword/helper";
 import type { prRequest, resetPasswordErrorCodes } from "./type";
 import type { Request } from 'express'
-const UserVault = models['UserVault'] as Model<IUserDocument>; // ✅ THIS is key
+const UserVault = getMongooseModel('UserVault')  // ✅ THIS is key
 
 
 // TODO:: fixed the error handling in the catch
