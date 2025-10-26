@@ -161,6 +161,17 @@ async function seedUserWithResume() {
                     ]
                 },
                 {
+                    name: "123",
+                    duration: "2018 - 2023",
+                    position: "Software Engineer",
+                    pointers: [
+                        "Contributed to the design and development of enterprise-grade IoT applications using the MEAN stack...",
+                        "Collaborated with cross-functional teams to build scalable backend APIs in Node.js and MongoDB...",
+                        "Led the development of 'Anirax', a modern MERN stack-based video streaming platform...",
+                        "Implemented CI/CD pipelines and Docker-based deployments..."
+                    ]
+                },
+                {
                     name: "Q3 Technology",
                     duration: "2023 - 2024",
                     position: "Software Engineer",

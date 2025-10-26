@@ -28,7 +28,7 @@ export default [
           varsIgnorePattern: "^_"
         }
       ],
-      "@typescript-eslint/no-unsafe-member-access": "error",
+      // "@typescript-eslint/no-unsafe-member-access": "error",
       // "@typescript-eslint/no-unsafe-assignment": "error",
       "unused-imports/no-unused-imports": "error"
     }

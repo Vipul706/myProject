@@ -30,11 +30,14 @@
 }
 
 body {
-  background: #ccc;
-  padding: 20mm;
-  display: flex;
-  justify-content: center;
-  font-family: Arial, sans-serif;
+    background: #ccc;
+    padding: 20mm;
+    gap: 25px;
+    display: flex;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+    align-items: center;
 }
 
 .a4-page {
@@ -174,6 +177,7 @@ body {
 .exp {
   padding: var(--expPadding);
   border-bottom: var(--border);
+  width: 100%;
 }
 @media print {
   body {

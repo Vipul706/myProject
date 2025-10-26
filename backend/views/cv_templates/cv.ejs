@@ -9,115 +9,173 @@
     />
     <title>CV Template</title>
     <link rel="stylesheet" href="/css/cv.css" />
+    <style>
+      .page-footer {
+        text-align: center;
+        position: absolute;
+        bottom: 10mm;
+        width: 100%;
+        font-size: 10pt;
+        color: #555;
+      }
+    </style>
   </head>
+
   <body>
-    <div class="a4-page">
-      <div class="intro">
-        <div class="bgSig"></div>
-        <div class="name"><%= data.userData.name %></div>
-        <div class="position">
-          <%= data.cvData?.exp?.[data.cvData.exp.length - 1].position %>
-        </div>
-      </div>
+    <% if (data.cvData.exp && data.cvData.exp.length > 0) { %>
+      <% 
+        const expChunks = [];
+        if (data.cvData.exp.length <= 3) {
+          expChunks.push(data.cvData.exp);
+        } else {
+          expChunks.push(data.cvData.exp.slice(0, 3)); // first 3 on first page
+          for (let i = 3; i < data.cvData.exp.length; i += 5) {
+            expChunks.push(data.cvData.exp.slice(i, i + 5)); // 5 per page after
+          }
+        }
+      %>
 
-      <div class="expBoxConatiner">
-        <div class="boxTwo">
-          <!-- EDUCATION SECTION -->
-          <div class="edu">
-            <div class="title"><strong>E</strong>DUCATION</div>
-            <% if (data.cvData.education && data.cvData.education.length > 0) {
-            %> <% data.cvData.education.forEach(function(edu) { %>
-            <div class="eduData">
-              <div class="duration"><%= edu.duration %></div>
-              <div class="name"><%= edu.name %></div>
-              <li class="program"><%= edu.program %></li>
-              <li class="gpa">CGPA: <%= edu.cgpa %></li>
+      <% expChunks.forEach((chunk, index) => { %>
+        <div class="a4-page">
+          <% if (index === 0) { %>
+            <!-- ===== FIRST PAGE ===== -->
+            <div class="intro">
+              <div class="name"><%= data.userData.name %></div>
+              <div class="position">
+                <%= data.cvData.exp[data.cvData.exp.length - 1].position %>
+              </div>
             </div>
-            <% }); %> <% } else { %>
-            <div class="eduData">
-              <div class="name">No education data available</div>
-            </div>
-            <% } %>
-          </div>
 
-          <!-- SKILLS SECTION -->
-          <div class="skills">
-            <div class="title"><strong>S</strong>KILLS</div>
-            <ul>
-              <% if (data.cvData.skills && data.cvData.skills.length > 0) { %>
-              <% data.cvData.skills.forEach(function(skill) { %>
-              <li><%= skill %></li>
-              <% }); %> <% } else { %>
-              <li>No skills listed</li>
-              <% } %>
-            </ul>
-          </div>
+            <div class="expBoxConatiner">
+              <!-- ===== LEFT COLUMN ===== -->
+              <div class="boxTwo">
+                <!-- EDUCATION -->
+                <div class="edu">
+                  <div class="title"><strong>E</strong>DUCATION</div>
+                  <% if (data.cvData.education?.length) { %>
+                    <% data.cvData.education.forEach(edu => { %>
+                      <div class="eduData">
+                        <div class="duration"><%= edu.duration %></div>
+                        <div class="name"><%= edu.name %></div>
+                        <li class="program"><%= edu.program %></li>
+                        <li class="gpa">CGPA: <%= edu.cgpa %></li>
+                      </div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="eduData">No education data available</div>
+                  <% } %>
+                </div>
 
-          <!-- LANGUAGE SECTION -->
-          <div class="language">
-            <div class="title"><strong>L</strong>ANGUAGE</div>
-            <ul>
-              <li>Hindi</li>
-              <li>English</li>
-            </ul>
-          </div>
-        </div>
+                <!-- SKILLS -->
+                <div class="skills">
+                  <div class="title"><strong>S</strong>KILLS</div>
+                  <ul>
+                    <% if (data.cvData.skills?.length) { %>
+                      <% data.cvData.skills.forEach(skill => { %>
+                        <li><%= skill %></li>
+                      <% }); %>
+                    <% } else { %>
+                      <li>No skills listed</li>
+                    <% } %>
+                  </ul>
+                </div>
 
-        <!-- EXPERIENCE SECTION -->
-        <div class="exp">
-          <div class="title"><strong>W</strong>ORK EXPERIENCE</div>
-          <% if (data.cvData.exp && data.cvData.exp.length > 0) { %> <%
-          data.cvData.exp.forEach(function(expItem) { %>
-          <div class="company">
-            <div class="compDetail">
-              <div class="name"><%= expItem.name %></div>
-              <div class="duration"><%= expItem.duration %></div>
+                <!-- LANGUAGES -->
+                <div class="language">
+                  <div class="title"><strong>L</strong>ANGUAGE</div>
+                  <ul>
+                    <li>Hindi</li>
+                    <li>English</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- ===== RIGHT COLUMN (Experience) ===== -->
+              <div class="exp">
+                <div class="title"><strong>W</strong>ORK EXPERIENCE</div>
+                <% chunk.forEach(expItem => { %>
+                  <div class="company">
+                    <div class="compDetail">
+                      <div class="name"><%= expItem.name %></div>
+                      <div class="duration"><%= expItem.duration %></div>
+                    </div>
+                    <div class="position"><%= expItem.position %></div>
+                    <div class="workExp">
+                      <% expItem.pointers.forEach(point => { %>
+                        <li><%= point %></li>
+                      <% }); %>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
             </div>
-            <div class="position"><%= expItem.position %></div>
-            <div class="workExp">
-              <% expItem.pointers.forEach(function(point) { %>
-              <li><%= point %></li>
-              <% }) %>
+          <% } else { %>
+            <!-- ===== SUBSEQUENT PAGES ===== -->
+            <div class="intro">
+              <div class="name"><%= data.userData.name %></div>
+              <div class="position">Continued Experience</div>
             </div>
-          </div>
-          <% }) %> <% } else { %>
-          <p>No experience available</p>
+
+            <div class="expBoxConatiner">
+              <div class="exp">
+                <div class="title">
+                  <strong>W</strong>ORK EXPERIENCE 
+                </div>
+                <% chunk.forEach(expItem => { %>
+                  <div class="company">
+                    <div class="compDetail">
+                      <div class="name"><%= expItem.name %></div>
+                      <div class="duration"><%= expItem.duration %></div>
+                    </div>
+                    <div class="position"><%= expItem.position %></div>
+                    <div class="workExp">
+                      <% expItem.pointers.forEach(point => { %>
+                        <li><%= point %></li>
+                      <% }); %>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
           <% } %>
         </div>
+      <% }); %>
+
+    <% } else { %>
+      <div class="a4-page">
+        <div class="intro">
+          <div class="name"><%= data.userData.name %></div>
+          <div class="position">No Experience Available</div>
+        </div>
+        <p style="padding: 20mm">No experience available</p>
       </div>
-    </div>
+    <% } %>
 
     <!-- PDF Download Button -->
     <img
       id="downloadBtn"
       src="/assets/pdf.svg"
       alt="Download PDF"
-      style="cursor: pointer; z-index: 1000; height: 14mm"
+      style="cursor: pointer; z-index: 1000; height: 14mm; position: absolute; top: 70px; right: 375px;"
     />
 
-    <!-- Script to trigger PDF generation -->
     <script>
-      document
-        .getElementById('downloadBtn')
-        .addEventListener('click', async () => {
-          const htmlContent = document.querySelector('.a4-page').outerHTML
-
-          const response = await fetch('/pdf/generate-pdf', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ html: htmlContent })
-          })
-
-          const blob = await response.blob()
-          const url = URL.createObjectURL(blob)
-
-          const link = document.createElement('a')
-          link.href = url
-          link.download = 'resume.pdf'
-          link.click()
-
-          URL.revokeObjectURL(url)
-        })
+      document.getElementById('downloadBtn').addEventListener('click', async () => {
+        const htmlPages = Array.from(document.querySelectorAll('.a4-page')).map(p => p.outerHTML);
+        const htmlContent = htmlPages.join('');
+        const response = await fetch('/pdf/generate-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ html: htmlContent })
+        });
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'resume.pdf';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
     </script>
   </body>
 </html>
